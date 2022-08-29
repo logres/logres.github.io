@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha256-xejo6yLi6vGtAjcMIsY8BHdKsLg7QynVlFMzdQgUuy8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.logres.tech","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.3","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="个人对Flex Bison的初次使用中遇到了许多的问题，亦花费了相当多的时间来浏览StackOverflow等论坛和官方手册。为了个人记忆，也为了后人少走弯路，特此记录。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flex and Bison">
+<meta property="og:url" content="https://blog.logres.tech/Flex-and-Bison/flex-and-bison/index.html">
+<meta property="og:site_name" content="Logres&#39; Blog">
+<meta property="og:description" content="个人对Flex Bison的初次使用中遇到了许多的问题，亦花费了相当多的时间来浏览StackOverflow等论坛和官方手册。为了个人记忆，也为了后人少走弯路，特此记录。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-21T11:25:25.000Z">
+<meta property="article:modified_time" content="2022-08-29T12:29:50.564Z">
+<meta property="article:author" content="Logres">
+<meta property="article:tag" content="Logres">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.logres.tech/Flex-and-Bison/flex-and-bison/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.logres.tech/Flex-and-Bison/flex-and-bison/","path":"Flex-and-Bison/flex-and-bison/","title":"Flex and Bison"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Flex and Bison | Logres' Blog</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Logres' Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">君子不器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-game"><a href="/games/" rel="section"><i class="fa fa-gamepad fa-fw"></i>game</a></li><li class="menu-item menu-item-academic"><a href="/" rel="section"><i class="fa fas fa-graduation-cap fa-fw"></i>academic</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Flex"><span class="nav-number">1.</span> <span class="nav-text">Flex</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Flex%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.1.</span> <span class="nav-text">Flex格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">动作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8E%E7%BD%AE%E4%BB%A3%E7%A0%81"><span class="nav-number">1.4.</span> <span class="nav-text">后置代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9B%E4%B8%80%E6%AD%A5%E8%A1%A5%E5%85%85"><span class="nav-number">1.5.</span> <span class="nav-text">进一步补充</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Flex-c-%E6%96%87%E4%BB%B6"><span class="nav-number">1.5.1.</span> <span class="nav-text">Flex.c 文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Flex-%E5%8F%AF%E9%80%89%E5%8A%9F%E8%83%BD"><span class="nav-number">1.5.2.</span> <span class="nav-text">Flex 可选功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Flex%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="nav-number">1.5.3.</span> <span class="nav-text">Flex上下文</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">1.5.4.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#yywrap-0"><span class="nav-number">1.5.4.1.</span> <span class="nav-text">yywrap(0)</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bison"><span class="nav-number">2.</span> <span class="nav-text">Bison</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Bison%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.1.</span> <span class="nav-text">Bison格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80-1"><span class="nav-number">2.2.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E5%BC%8F%E4%B8%8E%E5%8A%A8%E4%BD%9C"><span class="nav-number">2.3.</span> <span class="nav-text">生成式与动作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8E%E7%BD%AE%E4%BB%A3%E7%A0%81-1"><span class="nav-number">2.4.</span> <span class="nav-text">后置代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9B%E4%B8%80%E6%AD%A5%E8%A1%A5%E5%85%85-1"><span class="nav-number">2.5.</span> <span class="nav-text">进一步补充</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bison-c%E6%96%87%E4%BB%B6%E4%B8%8EBison%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="nav-number">2.6.</span> <span class="nav-text">Bison.c文件与Bison上下文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E9%80%89%E5%8A%9F%E8%83%BD"><span class="nav-number">2.7.</span> <span class="nav-text">可选功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%94%99%E8%AF%AF%E5%88%86%E6%9E%90%E5%8A%9F%E8%83%BD"><span class="nav-number">2.8.</span> <span class="nav-text">错误分析功能</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%81%94%E5%90%88%E7%BC%96%E8%AF%91"><span class="nav-number">3.</span> <span class="nav-text">联合编译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#yylex"><span class="nav-number">3.1.</span> <span class="nav-text">yylex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%8D%E7%BD%AE%E4%BF%A1%E6%81%AF"><span class="nav-number">3.2.</span> <span class="nav-text">位置信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%8D%E7%B4%A0%E4%BF%A1%E6%81%AF"><span class="nav-number">3.3.</span> <span class="nav-text">词素信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96-1"><span class="nav-number">3.4.</span> <span class="nav-text">其他</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E4%B8%8E%E7%BC%96%E8%AF%91"><span class="nav-number">3.5.</span> <span class="nav-text">依赖与编译</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Logres</p>
+  <div class="site-description" itemprop="description">凡有所学，皆成性格。</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/logres" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;logres" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:logres_king@126.com" title="E-Mail → mailto:logres_king@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.logres.tech/Flex-and-Bison/flex-and-bison/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Logres">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Logres' Blog">
+      <meta itemprop="description" content="凡有所学，皆成性格。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Flex and Bison | Logres' Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Flex and Bison
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-03-21 19:25:25" itemprop="dateCreated datePublished" datetime="2022-03-21T19:25:25+08:00">2022-03-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-08-29 20:29:50" itemprop="dateModified" datetime="2022-08-29T20:29:50+08:00">2022-08-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Flex-and-Bison/" itemprop="url" rel="index"><span itemprop="name">Flex-and-Bison</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>个人对Flex Bison的初次使用中遇到了许多的问题，亦花费了相当多的时间来浏览StackOverflow等论坛和官方手册。为了个人记忆，也为了后人少走弯路，特此记录。</p>
+<span id="more"></span>
+
+<h2 id="Flex"><a href="#Flex" class="headerlink" title="Flex"></a>Flex</h2><p>Flex是一个词法分析器生成器，可以根据用户编写的源文件(.l文件)生成对应的C语言文件。</p>
+<h3 id="Flex格式"><a href="#Flex格式" class="headerlink" title="Flex格式"></a>Flex格式</h3><p>Flex源文件格式如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">--------</span><br><span class="line">Prologue</span><br><span class="line">--------</span><br><span class="line"><span class="number">1.</span> 前置代码</span><br><span class="line">%&#123;</span><br><span class="line">    <span class="comment">/*定义、声明相关*/</span>    </span><br><span class="line">&#125;%</span><br><span class="line"></span><br><span class="line"><span class="number">2.</span> Flex声明</span><br><span class="line"></span><br><span class="line"><span class="number">3.</span> 正则定义</span><br><span class="line">定义    (正则)</span><br><span class="line"></span><br><span class="line">%%</span><br><span class="line">------------</span><br><span class="line">正则识别与动作</span><br><span class="line">------------</span><br><span class="line"></span><br><span class="line">&#123;定义&#125;  &#123;动作&#125;</span><br><span class="line"></span><br><span class="line">%%</span><br><span class="line"></span><br><span class="line">-------</span><br><span class="line">后置代码</span><br><span class="line">-------</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>Flex格式相对简单，主要由前言、动作、后置代码三个部分组成，顺序不限。</p>
+<p>为便于讨论，后续称Flex的.l源文件为Flex.l、.c文件为Flex.c。</p>
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><ol>
+<li>前置代码: 用户自定义的C语言代码，将出现在<strong>Flex.c文件</strong>靠前位置(Flex自身相关的声明部分后、Flex的函数定义前)。书写时，以&amp;#123;&amp;#125;包围，以便Flex识别。</li>
+<li>flex声明：在此处通过部分语句，开启或关闭<strong>Flex的可选功能</strong></li>
+<li>正则定义：使用Flex规定的正则表达式，编写部分常见句型，并对其命名，便于后续使用。格式类似NAME REG。Flex的正则书写方法网上很多，在此不作赘述。</li>
+</ol>
+<h3 id="动作"><a href="#动作" class="headerlink" title="动作"></a>动作</h3><p>动作部分相对简单，由正则句型及与之对应的动作组成。格式类似</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;NAME&#125;  &#123;ACTION&#125;</span><br><span class="line">REG     &#123;ACTION&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意在使用前言中定义的NAME时，需要以{}包围。此处ACTION对应于<strong>Flex.c文件</strong>的函数yylex()中的行为。yylex()不停读取字符流，匹配，响应，再匹配，再响应，直至文件尾。用户可以在此处使用最终c文件中<strong>Flex上下文中</strong>的变量和函数来编写自己的代码。</p>
+<h3 id="后置代码"><a href="#后置代码" class="headerlink" title="后置代码"></a>后置代码</h3><p>前言中的前置代码被迁移至<strong>Flex.c文件</strong>中Flex函数之前的位置，而后置代码则迁移至该文件的末端，其余基本一致。同样，在此处，用户可以在此处使用最终c文件中<strong>Flex上下文中</strong>的变量和函数来编写自己的代码。</p>
+<h3 id="进一步补充"><a href="#进一步补充" class="headerlink" title="进一步补充"></a>进一步补充</h3><p>在前面的概述中，提到了诸如Flex.c文件、Flex上下文这类的词语。对Flex不够熟悉的读者可能感到迷惑，此处给出详细解释。</p>
+<h4 id="Flex-c-文件"><a href="#Flex-c-文件" class="headerlink" title="Flex.c 文件"></a>Flex.c 文件</h4><p>经过Flex文件的转换，.l源文件将被转换为Flex.c。</p>
+<p>Flex.c文件包含了从Flex.l文件中的正则匹配规则与动作转换出的相关代码。其中，对外暴露的主要接口就是yylex()函数。</p>
+<p>按照前述——yylex函数不停读取字符流，匹配，响应，再匹配，再响应，直至文件尾。这是yylex函数的一般行为，同时，前面也提及了，用户在匹配规则中，可以定义yylex函数在匹配到一个单词之后的行为，这个行为对于yylex的行为是有很大影响的。比如，改变一些变量——参考<strong>Flex上下文</strong>，又或直接Return，打断流程——参考<strong>Bison</strong>中的yylex的使用。</p>
+<p>Flex.c的代码结构上，可以表示如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">----------------</span><br><span class="line">Flex宏定义与声明</span><br><span class="line">----------------</span><br><span class="line"></span><br><span class="line">-----------</span><br><span class="line">用户前置代码</span><br><span class="line">-----------</span><br><span class="line"></span><br><span class="line">-----------</span><br><span class="line">Flex函数定义</span><br><span class="line">-----------</span><br><span class="line"></span><br><span class="line">-----------</span><br><span class="line">用户后置代码</span><br><span class="line">-----------</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>结合Flex.c的结构，就可以知道自己的代码的最终位置。进一步，按照C语言从前至后的编译顺序，也就能搞懂大部分Undefined问题了。</p>
+<h4 id="Flex-可选功能"><a href="#Flex-可选功能" class="headerlink" title="Flex 可选功能"></a>Flex 可选功能</h4><p>Flex作为词法分析器生成器，其基本功能在于读入文件，分析出相应的token流。</p>
+<p>但除此之外，Flex还可以在这个过程中完成一些附加操作，比如：</p>
+<ol>
+<li>统计行号功能，即在分析的过程中维护一个yylineno变量，记录当前token的行号。</li>
+<li>……</li>
+</ol>
+<p>将以下格式的声明置于前言部分的Flex声明处，即可开启。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%option yylineno</span><br></pre></td></tr></table></figure>
+
+<h4 id="Flex上下文"><a href="#Flex上下文" class="headerlink" title="Flex上下文"></a>Flex上下文</h4><p>在Flex中书写代码，往往摸不着头脑。比如，在ACTION中书写对单词的响应代码，也不知道自己在哪儿，只能打印几个变量，匆匆作罢。</p>
+<p>“要是知道自己写的代码在哪儿就好了。”——相信这是不少人的想法。在此，结合前述提及的Flex.c代码结构，说道说道编程上下文。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">----------------</span><br><span class="line">Flex宏定义与声明</span><br><span class="line"><span class="comment">/*宏类型等等*/</span></span><br><span class="line"><span class="type">int</span> yylineno;<span class="comment">/*行号*/</span></span><br><span class="line"><span class="type">char</span>* yytext;<span class="comment">/*当前token内容*/</span></span><br><span class="line">----------------</span><br><span class="line"></span><br><span class="line">-----------</span><br><span class="line">用户前置代码</span><br><span class="line">-----------</span><br><span class="line"></span><br><span class="line">-----------</span><br><span class="line">Flex函数定义</span><br><span class="line"></span><br><span class="line"><span class="comment">/*yylex外函数*/</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">yylex()&#123;</span><br><span class="line"></span><br><span class="line">    yylineno的更新代码</span><br><span class="line">    yytext的更新代码</span><br><span class="line">    Switch(Reg)&#123;</span><br><span class="line">    case1:</span><br><span class="line">        ACTION1</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    case1：</span><br><span class="line">        ACTION2</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    ……</span><br><span class="line">    &#125;</span><br><span class="line">&#125;；</span><br><span class="line">-----------</span><br><span class="line"></span><br><span class="line">-----------</span><br><span class="line">用户后置代码</span><br><span class="line">-----------</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>上述Flex.c结构更为详尽地解析了用户编程的上下文。可以看出，用户定义的ACTION，将在yylex中被调用，同时，yylex还将维护之前定义的yytext与yylineno等变量。这些变量以及用户在前置代码中定义的变量，在ACTION中都是可以使用的——这也就意味着用户可以在ACTION中改变这些参数，这可能极大地影响yylex的行为，故对Flex内置变量的使用要小心，而对于自定义变量，就可以随意使用了。</p>
+<p>PS:关于yytext，虽然yytext保留的是指向当前token的字符串指针，但在实际操作时，其内容将串行排列，从而第一个token的指向内容在解析到后期时，已然成了一整个文件。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">开始时              后来</span><br><span class="line">|最初指针           |最初指针    |现在的指针  </span><br><span class="line">a \<span class="number">0</span>                a b c d e f g \<span class="number">0</span></span><br><span class="line">最初指针打印结果“a”  最初指针打印结果“abcdefg”</span><br></pre></td></tr></table></figure>
+
+<p>所以，若是想打印对应内容，应当在ACTION中，即词法分析该token时就进行深拷贝。</p>
+<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><h5 id="yywrap-0"><a href="#yywrap-0" class="headerlink" title="yywrap(0)"></a>yywrap(0)</h5><p>在yylex执行时需要yywrap函数辅助。在读完一份文件后，yywarp函数负责返回int值来表示任务是否结束（1 结束 0 未结束）。若结束，则停止程序；否则，继续读取另一份文件。这个函数需要用户自己定义。</p>
+<h2 id="Bison"><a href="#Bison" class="headerlink" title="Bison"></a>Bison</h2><p>Bison是一个自由软件，用于自动生成语法分析器程序，实际上可用于所有常见的操作系统。Bison把LALR形式的上下文无关文法描述转换为可做语法分析的C或C++程序。</p>
+<h3 id="Bison格式"><a href="#Bison格式" class="headerlink" title="Bison格式"></a>Bison格式</h3><p>Bison源文件格式如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">--------</span><br><span class="line">prologue</span><br><span class="line">--------</span><br><span class="line"></span><br><span class="line"><span class="number">1.</span> 前置代码</span><br><span class="line">%&#123;</span><br><span class="line">        </span><br><span class="line">&#125;%</span><br><span class="line"></span><br><span class="line"><span class="number">2.</span> Bison声明</span><br><span class="line"></span><br><span class="line"><span class="number">3.</span> 语法相关声明</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%%</span><br><span class="line"></span><br><span class="line">-----------</span><br><span class="line">生成式与动作</span><br><span class="line">-----------</span><br><span class="line"></span><br><span class="line">生成式  &#123;ACTION&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%%</span><br><span class="line"></span><br><span class="line">--------</span><br><span class="line">后置代码</span><br><span class="line">--------</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>Bison源文件格式结构为与Flex类似的三段式，由前言、生成式与动作、后置代码构成。<br>为了后续讨论方便，将Bison的.y文件称为Bison.y；Bison生成的.c文件称为Bison.c文件，而.h文件称为Bison.h。</p>
+<h3 id="前言-1"><a href="#前言-1" class="headerlink" title="前言"></a>前言</h3><p>Bison中的前言亦由三个部分组成：</p>
+<ol>
+<li>前置代码：用户自定义代码，出现在<strong>Bison.c文件</strong>的开头</li>
+<li>Bison声明：用来开启一些<strong>可选功能</strong>、定义符号（非终结符&#x2F;终结符）类型</li>
+<li>语法相关声明：用于定义生成式移入&#x2F;规约时解决冲突时使用的计算优先级——优先级按规则从上至下递减，声明包括%left %right %nunonassoc三种，对应左结合、右结合、不结合。</li>
+</ol>
+<h3 id="生成式与动作"><a href="#生成式与动作" class="headerlink" title="生成式与动作"></a>生成式与动作</h3><p>生成式——动作的格式如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">A:B         &#123;ACTION&#125;</span><br><span class="line"> |C         &#123;ACTION&#125;</span><br><span class="line"> |D         &#123;ACTION&#125;</span><br><span class="line"> |<span class="comment">/*empty*/</span> &#123;ACTION&#125;</span><br><span class="line"> ;</span><br></pre></td></tr></table></figure>
+
+<p>Bison.c文件中的yyparse()，对输入的token流执行LALR(1)语法解析，即移入规约分析。</p>
+<p>当yyparse执行对应于规则的规约时,将附带执行ACTION内容，同样ACTION内动作的编写也需考虑<strong>Bison上下文</strong></p>
+<p>这一部分的规则还定义了<strong>错误分析功能</strong>，待后续分析。</p>
+<h3 id="后置代码-1"><a href="#后置代码-1" class="headerlink" title="后置代码"></a>后置代码</h3><p>Bison.y后置代码同Flex.l的后置代码被移入Flex.c末尾一致，被移动到Bison.c末尾。</p>
+<h3 id="进一步补充-1"><a href="#进一步补充-1" class="headerlink" title="进一步补充"></a>进一步补充</h3><p>此处对上述简要提及但未详述的内容做出补充。</p>
+<h3 id="Bison-c文件与Bison上下文"><a href="#Bison-c文件与Bison上下文" class="headerlink" title="Bison.c文件与Bison上下文"></a>Bison.c文件与Bison上下文</h3><p>Bison.y 文件经Bison程序处理后生成 Bison.c 文件。其中，最为主要的对外暴露接口为yyparse()用于对<em>文件</em>（没错，不是token流，而是文件。这部分在后续<strong>联合编译</strong>中将涉及）进行语法解析。</p>
+<p>其结构如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">Bison.c</span><br><span class="line"></span><br><span class="line">---------------------</span><br><span class="line">Bison版本信息与运行设置</span><br><span class="line">---------------------</span><br><span class="line"></span><br><span class="line">-----------</span><br><span class="line">用户前置代码</span><br><span class="line">-----------</span><br><span class="line"></span><br><span class="line">--------------------</span><br><span class="line">Bison宏与状态转移矩阵</span><br><span class="line">--------------------</span><br><span class="line"></span><br><span class="line">-----------</span><br><span class="line">Bison内部变量、函数与运行设置</span><br><span class="line"></span><br><span class="line">yylval定义</span><br><span class="line">yylloc定义</span><br><span class="line">……</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">yyparse</span><span class="params">()</span>&#123;</span><br><span class="line"></span><br><span class="line">    yylval更新</span><br><span class="line">    yylloc更新</span><br><span class="line">    ……</span><br><span class="line"></span><br><span class="line">    yylex()使用</span><br><span class="line">    Switch(Reduction)&#123;</span><br><span class="line">    case1:</span><br><span class="line">        ACTION</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    case2:</span><br><span class="line">        ACTION</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    ……</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">-----------</span><br><span class="line"></span><br><span class="line">-----------</span><br><span class="line">用户后置代码</span><br><span class="line">-----------</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>认识清楚自身代码的位置、代码上下文，有利于用户在ACTION、前后置代码中的编程。</p>
+<p>值得一提的是yylval与yylloc两个变量的定义，yylval用于记录目前分析的词素的值、yylloc则记录位置，而语法栈中不同符号的信息会被另外保存，故在ACTION是对yylval与yylloc进行访问往往得不到想要的结果，而是应该使用@$ @1 ……@n访问位置信息；$$ $1 …… $n访问词素值信息。</p>
+<h3 id="可选功能"><a href="#可选功能" class="headerlink" title="可选功能"></a>可选功能</h3><p>上面提到的yylloc在默认状况下是不开启的，此时使用将导致无定义——YYLTYPE未定义。需要使用一定的声明才能启动这个选项，即将下述代码置于Bison声明区。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%locations</span><br></pre></td></tr></table></figure>
+
+<p>还存在许多其他可选功能，如%union{}重新定义yylval的类型（默认为char*）。</p>
+<h3 id="错误分析功能"><a href="#错误分析功能" class="headerlink" title="错误分析功能"></a>错误分析功能</h3><p>Bison的错误分析基于恐慌模式，即在发生错误——读入符号后无对应动作的情况下：</p>
+<ol>
+<li>生成一个error token</li>
+<li>然后不停弹出栈顶符号与对应状态，直至按照给定的生成式中有一个能够移入error的状况为止,移入error</li>
+<li>此后，仅接受该生成式中能够跟在error token后的符号,直至完成该生成式</li>
+<li>同时，在成功移入三个符号后，解除error</li>
+</ol>
+<p>举例：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Exp:……</span><br><span class="line">    |Exp LB Exp RB</span><br><span class="line">    |……</span><br><span class="line">    |Exp LB Exp error RB</span><br><span class="line">    ；</span><br><span class="line">按照规则，对语句中“a[<span class="number">3</span>,<span class="number">5</span>]”将在读入“,”时引发错误。</span><br><span class="line">Bison将弹出<span class="string">&quot;,&quot;</span>，按照最后个生成式移入<span class="string">&quot;error&quot;</span>，丢弃“<span class="number">5</span>”，读入“]”，并在再读入两个符号后结束错误模式。（亦可用宏yyerrok立即结束）；</span><br></pre></td></tr></table></figure>
+
+<p>故错误分析往往是对给定例子进行，并在较低层给出生成式。在高层定义的生成式，接受绝大多数错误，难以识别具体错误类型。</p>
+<h2 id="联合编译"><a href="#联合编译" class="headerlink" title="联合编译"></a>联合编译</h2><p>Flex与Bison往往是组合工作的，为此，我们需要理清楚期间的关系。</p>
+<ul>
+<li><p>Flex从文件读入字符流，匹配token，响应，再匹配，直至结束。</p>
+</li>
+<li><p>Bison从文件读入字符流，分析语法，自底向上规约出初始符号。</p>
+</li>
+</ul>
+<p>可以看出，二者间的工作有一定的重复性，所以通过联合编译，可以减少重复劳作。</p>
+<h3 id="yylex"><a href="#yylex" class="headerlink" title="yylex"></a>yylex</h3><p>在Bison的工作中，其实也需要获取token，为语法分析作准备。Bison在Bison.h文件中为Bison.y中出现的所有终结符——以%token声明，与所有非终结符——生成式左侧的所有符号，定义了一系列宏，用以区分词素类型。对于非终结符，往往由终结符规约生成，而终结符呢？则依靠Bison中使用的yylex函数给出，这个yylex其实是需要用户自己实现的。</p>
+<blockquote>
+<p>注意：Bison.yylex函数的功能为匹配文件中下一个token（Bison中是一遍匹配token，一遍语法分析的），返回其类型；而Flex中的yylex则不停匹配，并不返回。</p>
+</blockquote>
+<p>为了复用Flex的yylex，我们需要改造Flex.yylex的行为，以适配Bison需要。</p>
+<ol>
+<li>Flex.l文件前置代码#include Bison.h文件，获取Bison中对不同类型Token的编码</li>
+<li>在ACTION中改变yylex函数的走向，返回token类型，然后return结束单次调用。</li>
+</ol>
+<h3 id="位置信息"><a href="#位置信息" class="headerlink" title="位置信息"></a>位置信息</h3><p>Bison在开启%locations可选功能后将提供yylloc变量，但由于高层词素信息往往来自底层的位置信息的组合，故在yylex中亦需要手动填写token的位置信息。该部分可由以下代码实现。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> YY_USER_ACTION \</span></span><br><span class="line"><span class="meta">    yylloc.first_line = yylloc.last_line = yylineno;\</span></span><br><span class="line"><span class="meta">    yylloc.first_column = yycolumn;\</span></span><br><span class="line"><span class="meta">    yylloc.last_column = yycolumn + yyleng - 1;\</span></span><br><span class="line"><span class="meta">    yycolumn += yyleng;</span></span><br><span class="line"></span><br><span class="line">\n|\r       &#123;yycolumn=<span class="number">1</span>;&#125;</span><br></pre></td></tr></table></figure>
+<p>其中YY_USER_ACTION是Flex.c中匹配成功后将进行的动作。</p>
+<p>这样一来，在Flex.c中修改Bison.c上下文中的变量yylloc即可提供对应的位置信息。</p>
+<p>同理，token的词素信息也来自ACTION中的赋值</p>
+<h3 id="词素信息"><a href="#词素信息" class="headerlink" title="词素信息"></a>词素信息</h3><p>与位置信息类型，Bison.c中高层词素的语义来自低层语义的组合，而底层token的语义就得靠yylex来实现了。</p>
+<p>我们可以在ACTION中使用yylval来为token赋值。</p>
+<h3 id="其他-1"><a href="#其他-1" class="headerlink" title="其他"></a>其他</h3><p>有时，我们在语法解析时还希望从Flex中获取一些别的相关信息，如规约错误时的位置什么的。</p>
+<p>这时可以依据C语言的<strong>extern</strong>关键字，将Flex中的变量对外开放访问。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="type">int</span> yylineno;</span><br><span class="line"><span class="keyword">extern</span> <span class="type">int</span> yytext;</span><br></pre></td></tr></table></figure>
+
+<p>上述语句就允许Bison.c（包括用户代码）直接访问Flex中的变量。</p>
+<h3 id="依赖与编译"><a href="#依赖与编译" class="headerlink" title="依赖与编译"></a>依赖与编译</h3><p>我们再整理一次文件的依赖关系</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Flex.c include Bison.h <span class="keyword">for</span> token编号 yylloc yylval <span class="keyword">do</span> 解析token编号、给token赋值、给token位置信息。</span><br><span class="line"></span><br><span class="line">Bison.c include Flex.c <span class="keyword">for</span> yylex定义 yylineno等成分 <span class="keyword">do</span> <span class="title function_">yyparse</span><span class="params">()</span> <span class="keyword">for</span> US</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>故可编写如下makefile</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">parser: bison.c flex.c</span></span><br><span class="line">	gcc -o parser bison.c</span><br><span class="line"></span><br><span class="line"><span class="section">bison.c: bison.y</span></span><br><span class="line">	bison -o bison.c -dvt bison.y</span><br><span class="line"><span class="section">bison.h: bison.y</span></span><br><span class="line">	bison -o bison.c -dvt bison.y</span><br><span class="line"></span><br><span class="line"><span class="section">flex.c: flex.l bison.h</span></span><br><span class="line">	flex -o flex.c flex.l</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/Git-Guide-and-Fundamental/git-guide-and-fundamental/" rel="prev" title="Git: Guide and Fundamental">
+                  <i class="fa fa-chevron-left"></i> Git: Guide and Fundamental
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/tinyMQ/tinymq/" rel="next" title="tinyMQ">
+                  tinyMQ <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Logres</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"left","width":225,"height":450},"mobile":{"show":true},"log":false});</script></body>
+</html>

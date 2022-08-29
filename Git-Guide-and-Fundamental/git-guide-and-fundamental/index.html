@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha256-xejo6yLi6vGtAjcMIsY8BHdKsLg7QynVlFMzdQgUuy8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.logres.tech","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.3","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="凡是对编程有所涉猎的人，想必都对Git有所了解，毕竟在个人开发的角度来说，Git可算是版本控制一把梭；而哪怕是不从事开发的人员，也有不少为GitHub上的开源项目所吸引，在教程的指导下稀里糊涂装上Git，clone项目的。用Git的人或许很多，但是，懂Git的又有几人呢？想用Git，理解Git，还得从Git的原理说开去。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git: Guide and Fundamental">
+<meta property="og:url" content="https://blog.logres.tech/Git-Guide-and-Fundamental/git-guide-and-fundamental/index.html">
+<meta property="og:site_name" content="Logres&#39; Blog">
+<meta property="og:description" content="凡是对编程有所涉猎的人，想必都对Git有所了解，毕竟在个人开发的角度来说，Git可算是版本控制一把梭；而哪怕是不从事开发的人员，也有不少为GitHub上的开源项目所吸引，在教程的指导下稀里糊涂装上Git，clone项目的。用Git的人或许很多，但是，懂Git的又有几人呢？想用Git，理解Git，还得从Git的原理说开去。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-12-24T17:04:55.000Z">
+<meta property="article:modified_time" content="2022-08-29T12:29:50.564Z">
+<meta property="article:author" content="Logres">
+<meta property="article:tag" content="Logres">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.logres.tech/Git-Guide-and-Fundamental/git-guide-and-fundamental/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.logres.tech/Git-Guide-and-Fundamental/git-guide-and-fundamental/","path":"Git-Guide-and-Fundamental/git-guide-and-fundamental/","title":"Git: Guide and Fundamental"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Git: Guide and Fundamental | Logres' Blog</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Logres' Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">君子不器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-game"><a href="/games/" rel="section"><i class="fa fa-gamepad fa-fw"></i>game</a></li><li class="menu-item menu-item-academic"><a href="/" rel="section"><i class="fa fas fa-graduation-cap fa-fw"></i>academic</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#What-is-Git"><span class="nav-number">1.</span> <span class="nav-text">What is Git?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-does-it-work"><span class="nav-number">2.</span> <span class="nav-text">How does it work?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%BB%93%E6%9E%84"><span class="nav-number">2.1.</span> <span class="nav-text">基础结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%9D%E6%83%B3"><span class="nav-number">2.2.</span> <span class="nav-text">思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="nav-number">2.3.</span> <span class="nav-text">具体流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-about-branch"><span class="nav-number">3.</span> <span class="nav-text">How about branch?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C"><span class="nav-number">3.1.</span> <span class="nav-text">常用操作</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Logres</p>
+  <div class="site-description" itemprop="description">凡有所学，皆成性格。</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/logres" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;logres" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:logres_king@126.com" title="E-Mail → mailto:logres_king@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.logres.tech/Git-Guide-and-Fundamental/git-guide-and-fundamental/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Logres">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Logres' Blog">
+      <meta itemprop="description" content="凡有所学，皆成性格。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Git: Guide and Fundamental | Logres' Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Git: Guide and Fundamental
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-12-25 01:04:55" itemprop="dateCreated datePublished" datetime="2021-12-25T01:04:55+08:00">2021-12-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-08-29 20:29:50" itemprop="dateModified" datetime="2022-08-29T20:29:50+08:00">2022-08-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Git-Guide-and-Fundamental/" itemprop="url" rel="index"><span itemprop="name">Git-Guide-and-Fundamental</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>凡是对编程有所涉猎的人，想必都对Git有所了解，毕竟在个人开发的角度来说，Git可算是版本控制一把梭；而哪怕是不从事开发的人员，也有不少为GitHub上的开源项目所吸引，在教程的指导下稀里糊涂装上Git，clone项目的。用Git的人或许很多，但是，懂Git的又有几人呢？想用Git，理解Git，还得从Git的原理说开去。</p>
+<span id="more"></span>
+
+<h2 id="What-is-Git"><a href="#What-is-Git" class="headerlink" title="What is Git?"></a>What is Git?</h2><p>Git 是一个开源的分布式版本控制系统。</p>
+<p><strong>开源</strong>：开放源代码<br><strong>分布式</strong>：去中心化</p>
+<h2 id="How-does-it-work"><a href="#How-does-it-work" class="headerlink" title="How does it work?"></a>How does it work?</h2><p>Git采用<strong>键值-数据库</strong>的模式来构建版本控制系统。</p>
+<h3 id="基础结构"><a href="#基础结构" class="headerlink" title="基础结构"></a>基础结构</h3><p>Git系统由三个部分组成：</p>
+<ol>
+<li>工作区：源文件存储区，用于工作</li>
+<li>版本库：存储历史版本</li>
+<li>暂存区：暂时存放一次版本资料的空间，Git区别于其余版本控制系统的设计组成部分</li>
+</ol>
+<h3 id="思想"><a href="#思想" class="headerlink" title="思想"></a>思想</h3><p>Git在版本库中以<strong>blob</strong>的形式存放被提交的文件。</p>
+<p>在生成blob文件时，Git对文件进行压缩，同时采用SHA-1算法，得到20字节的hash值，以40个16进制数字表示，前两数字充当文件夹名（此处为版本库中的文件夹），后38个数字则为文件名。<br>注意到20字节的hash值冲突概率极低，故不考虑碰撞现象。</p>
+<p>这就解决了文件存放的问题。</p>
+<p>Git以<strong>tree</strong>的形式解决文件夹（工作区中的）的表示形式及组织文件的问题。</p>
+<p>tree中包含其统筹下文件及文件夹的索引（指针）以及文件名、文件权限信息。</p>
+<p>版本库是由众多文件构成的，而版本库中的所有对象又都是由hash值来区别的。直接在版本库里生成tree再进行添加、修改文件，将改变hash值，不符合设计理念。</p>
+<p>解决方法：开辟<strong>暂存区</strong>，用于缓存一次版本库的内容，待确认提交后，再一次性生成tree。</p>
+<p>Git以<strong>commit</strong>的形式来记录一次版本库提交。</p>
+<p>commit中包含当此提交的tree的索引（指针）、作者、提交者、其前一个版本提交commit的索引（指针）以及提交说明信息。</p>
+<p>Git以<strong>tag</strong>的形式来为某次提交补充信息。</p>
+<p>tag中包含补充信息以及对象指针，采用命名而非哈希值来区分版本提交，较为便利。</p>
+<h3 id="具体流程"><a href="#具体流程" class="headerlink" title="具体流程"></a>具体流程</h3><p>git add 指令，将文件提交至版本库，生成blob，并在暂存区生成索引。</p>
+<p>git commit 指令，以前一个版本的commit，整合暂存区的索引，生成新的commit，并保留parent指针，指向前一commit。</p>
+<h2 id="How-about-branch"><a href="#How-about-branch" class="headerlink" title="How about branch?"></a>How about branch?</h2><p>分支管理是版本控制的重要功能。</p>
+<p>Git中采用ref即分支引用来区分分支。</p>
+<p>master、dev等分支，分别保留了其指导的分支的最新commit的索引。</p>
+<p>而Head则保有当下分支的索引，可间接获得分支最新commit。</p>
+<h3 id="常用操作"><a href="#常用操作" class="headerlink" title="常用操作"></a>常用操作</h3><p>git reset –[hard|mixed|soft] [Head]</p>
+<p>将版本回滚到[Head]所指示的版本（Head^表示上一个、Head^^上上个、Head~n上n个）<br>[hard……]则控制工作区的变化：</p>
+<ul>
+<li>hard 工作区、暂存区、版本库同步变化</li>
+<li>soft 仅版本库变化</li>
+</ul>
+<p>git merge <branch></p>
+<p>将目标分支合并到目前分支</p>
+<p>git remote add origin url</p>
+<p>关联远程仓库</p>
+<p>git push origin master</p>
+<p>将本地master分支推送到远程分支</p>
+<p>git pull</p>
+<p>拉取分支</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%B0%8F%E8%AE%B0/design-pattern/" rel="prev" title="Design Pattern">
+                  <i class="fa fa-chevron-left"></i> Design Pattern
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/Flex-and-Bison/flex-and-bison/" rel="next" title="Flex and Bison">
+                  Flex and Bison <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Logres</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"left","width":225,"height":450},"mobile":{"show":true},"log":false});</script></body>
+</html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha256-xejo6yLi6vGtAjcMIsY8BHdKsLg7QynVlFMzdQgUuy8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.logres.tech","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.3","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="脱胎于SOA框架，微服务(MicroService)架构以其服务自治的技术理念在互联网时代大放异彩。笔者在此想谈谈微服务出现的历史必然，回顾其起源与发展，也许能帮助读者对微服务有更加深刻的了解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Way To MicroService">
+<meta property="og:url" content="https://blog.logres.tech/Way-to-MicroService/way-to-microservice/index.html">
+<meta property="og:site_name" content="Logres&#39; Blog">
+<meta property="og:description" content="脱胎于SOA框架，微服务(MicroService)架构以其服务自治的技术理念在互联网时代大放异彩。笔者在此想谈谈微服务出现的历史必然，回顾其起源与发展，也许能帮助读者对微服务有更加深刻的了解。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-21T03:42:58.000Z">
+<meta property="article:modified_time" content="2022-08-29T12:29:50.564Z">
+<meta property="article:author" content="Logres">
+<meta property="article:tag" content="微服务">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.logres.tech/Way-to-MicroService/way-to-microservice/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.logres.tech/Way-to-MicroService/way-to-microservice/","path":"Way-to-MicroService/way-to-microservice/","title":"Way To MicroService"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Way To MicroService | Logres' Blog</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Logres' Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">君子不器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-game"><a href="/games/" rel="section"><i class="fa fa-gamepad fa-fw"></i>game</a></li><li class="menu-item menu-item-academic"><a href="/" rel="section"><i class="fa fas fa-graduation-cap fa-fw"></i>academic</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SOA%E6%97%B6%E4%BB%A3"><span class="nav-number">1.</span> <span class="nav-text">SOA时代</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SOA"><span class="nav-number">1.1.</span> <span class="nav-text">SOA</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ESB"><span class="nav-number">1.2.</span> <span class="nav-text">ESB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%96%B2%E8%BD%AF%E7%9A%84SOA"><span class="nav-number">1.3.</span> <span class="nav-text">疲软的SOA</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1"><span class="nav-number">2.</span> <span class="nav-text">微服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B5%B7%E6%BA%90"><span class="nav-number">2.1.</span> <span class="nav-text">起源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%B9%E6%A1%88"><span class="nav-number">2.2.</span> <span class="nav-text">微服务的分布式方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E6%B2%BB%E7%9A%84%E6%9C%8D%E5%8A%A1"><span class="nav-number">2.3.</span> <span class="nav-text">自治的服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%B0%E4%BB%8A%E7%9A%84%E5%BE%AE%E6%9C%8D%E5%8A%A1"><span class="nav-number">2.4.</span> <span class="nav-text">现今的微服务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Logres</p>
+  <div class="site-description" itemprop="description">凡有所学，皆成性格。</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/logres" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;logres" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:logres_king@126.com" title="E-Mail → mailto:logres_king@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.logres.tech/Way-to-MicroService/way-to-microservice/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Logres">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Logres' Blog">
+      <meta itemprop="description" content="凡有所学，皆成性格。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Way To MicroService | Logres' Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Way To MicroService
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-04-21 11:42:58" itemprop="dateCreated datePublished" datetime="2022-04-21T11:42:58+08:00">2022-04-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-08-29 20:29:50" itemprop="dateModified" datetime="2022-08-29T20:29:50+08:00">2022-08-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Way-to-MicroService/" itemprop="url" rel="index"><span itemprop="name">Way-to-MicroService</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>脱胎于SOA框架，<strong>微服务</strong>(MicroService)架构以其<strong>服务自治</strong>的技术理念在互联网时代大放异彩。笔者在此想谈谈微服务出现的历史必然，回顾其起源与发展，也许能帮助读者对微服务有更加深刻的了解。</p>
+<span id="more"></span>
+<h2 id="SOA时代"><a href="#SOA时代" class="headerlink" title="SOA时代"></a>SOA时代</h2><p>经历上世纪70年代的<strong>软件危机</strong>后，软件工程这门研究软件开发最佳实践的学科登上历史舞台。</p>
+
+
+<p>SOA作为软件工程史上里程碑式的存在，结束了分布式软件系统构件之间需要繁琐而复杂的点对点集成的蛮荒时代，以其ESB（企业服务总线）模式与WebService协议栈，快速征服了当时的软件开发者。</p>
+<h3 id="SOA"><a href="#SOA" class="headerlink" title="SOA"></a>SOA</h3><p>SOA的思想，正如其名：<strong>Service-Orient-Architecture</strong>，即通过称抽象软件为服务，使用通用化的接口管理与复用软件资源。</p>
+
+
+<p>SOA以其规范化的统一连接，便利了软件复用，避免了软件之间复杂的点对点连接。服务间在 ESB 调度下无须相互依赖却能相互通信，既带来了服务松耦合的好处，也使得SOA技术极为契合企业业务分析技术中的BPM（业务流程编排）模式。二者的契合，使得SOA成为了传统公司组织业务流程工具的不二选择。</p>
+<h3 id="ESB"><a href="#ESB" class="headerlink" title="ESB"></a>ESB</h3><p>虽然ESB不是SOA理念中的必要组成，即使不使用ESB，也能够实现SOA架构，但是，ESB的存在极大的便利的实现过程，成为了SOA约定俗成的一部分。</p>
+
+
+<p>ESB作为SOA系统的中间组件，承担了集成系统所有组成的功能，实现了服务发现、服务治理、日志等功能，从而对开发人员屏蔽分布式的细节，使其能够专注于业务。</p>
+<h3 id="疲软的SOA"><a href="#疲软的SOA" class="headerlink" title="疲软的SOA"></a>疲软的SOA</h3><p>SOA凭借其ESB、WebService等技术理念将企业内部或外部诸多服务组织在一起，从而实现了对企业资源的统筹及服务的分布式部署，是企业软件系统架构设计的优秀实践，但是，在近年兴起的互联网时代，却显得有些无力。</p>
+
+
+<ol>
+<li>SOA深厚的技术栈决定了其不可避免的重量级，WebService协议族的诸多扩展提供了对不同场景的应对，这些精密严格的协议，确实屏蔽了分布式架构本身的复杂性，但是过于深厚的技术栈本身也无疑极大地提升了对开发人员水平的要求</li>
+</ol>
+
+
+<ol start="2">
+<li>服务中，其他组织提供的服务的比重较大，企业无法对这些服务进行有效控制，SOA对接口的要求，使得企业无法很好地接入外部的服务。</li>
+</ol>
+<h2 id="微服务"><a href="#微服务" class="headerlink" title="微服务"></a>微服务</h2><h3 id="起源"><a href="#起源" class="headerlink" title="起源"></a>起源</h3><p>仔细想来，企业场景下的SOA实际上是一个十分中心化的架构，全部服务围绕ESB开发、治理，因而服务（哪怕是外部服务）也必须按照SOA指定的接口规范来接入。这对传统的企业化软件并非什么问题，内部服务自不必说，统一安排即可；外部服务，也仅需进行少量沟通（使用SOA的企业往往是金主，服务开发方愿意为客户进行定制服务）即可谈拢。</p>
+<p>而互联网时代呢？这无疑是一个近乎完全信息化的时代。大多互联网公司仅仅提供脱离实际物质资产的信息类服务，成功往往源于一个引领时代的idea。在这些公司的视角，软件不是企业组织业务的手段，而是业务本身，能否快速上线服务成为了企业能否成功的关键。因而，SOA过度严苛的规范，成为了开发的负担；同时，大多数的服务提供方不再拥有业务上的金主，而是广泛地为所有服务使用者提供同质化的服务，这就无法满足SOA对外部服务符合企业内部规范的需求。</p>
+<p>既然问题找到了，那么就好办了。</p>
+<p>答案即<strong>放弃统一的规范与中心化的ESB，实现服务的自治</strong>，微服务就此脱胎。</p>
+<blockquote>
+<p>2014年，Martin Fowler 与 James Lewis 共同提出了微服务的概念，定义了微服务是由以单一应用程序构成的小服务，自己拥有自己的进程与轻量化处理，服务依业务功能设计，以全自动的方式部署，与其他服务使用HTTP API通信。</p>
+</blockquote>
+<h3 id="微服务的分布式方案"><a href="#微服务的分布式方案" class="headerlink" title="微服务的分布式方案"></a>微服务的分布式方案</h3><p>上文提到，SOA的出现解决了点对点集成复杂，服务资源复用困难的问题。在放弃SOA的ESB后，微服务的开发者就需要自己来处理服务的调用、治理等问题了。所幸，今时不同往日，已有了太多成熟的分布式框架可选，开发者也不需要再原始地接入服务了。</p>
+
+
+<p>上图的分布式框架，横跨服务发现、服务治理、分布式存储等多个领域，为微服务开发提供了极大的便利，倒不如说，正是有着这些技术的存在，微服务才得以诞生。</p>
+<h3 id="自治的服务"><a href="#自治的服务" class="headerlink" title="自治的服务"></a>自治的服务</h3><p>如果说微服务与普通的服务有什么不同，那么最为显著的特征，就是<strong>自治</strong>。</p>
+
+
+<p>微服务的开发团队对自己的服务有近乎完全的掌控，从技术选型、架构设计到部署运维，都是团队内部的决定，只要能够提供所承诺的服务即可。</p>
+<p>自治，决定了微服务许多显著的特性：</p>
+<ol>
+<li>快速迭代：作为一个独立的服务，微服务能够独自进行版本迭代而不影响整个体系中的其他组件</li>
+<li>自动化运维：微服务的快速迭代，决定了其对自动化运维的需要</li>
+<li>数据去中心化：服务的自治，必然意味着数据的自治，在数据高度耦合的情况下，又谈何自由</li>
+<li>弱管道，强终端：SOA中的ESB在微服务中被各异的轻量级框架所代替，服务的治理再次回归终端</li>
+<li>……</li>
+</ol>
+<p>同时，微服务很好地继承了SOA<strong>易于复用的服务</strong>的技术理念。或许正如Martin Flower所说，我们应当将SOA视为微服务的超集，而传统的基于ESB的SOA，同微服务一般仅是SOA理念的的一种实现。</p>
+<h3 id="现今的微服务"><a href="#现今的微服务" class="headerlink" title="现今的微服务"></a>现今的微服务</h3><p>虽然脱胎于SOA，但经过多年的独立发展，微服务已然抹去了大多数SOA的影子，成了一类独立的软件架构。</p>
+
+
+<p>微服务服务自治的理念，与其他技术领域的相关技术一同发展，如今，容器技术、CI&#x2F;CD已然成为微服务开发不可缺少的一环。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在分布式发展初期，企业用<strong>SOA</strong>来屏蔽分布式细节；而如今，为了服务解耦与高效开发，互联网企业拥抱了<strong>微服务</strong>；近来，云计算提供商更是有掀起<strong>无服务</strong>浪潮，将分布式细节交给云提供商来处理。</p>
+<p>从中，我们不难发现，服务所需算力在资源化、服务本身在资源化、服务所需的管理亦在资源化，一如曾经的水、能源，本来每家每户自管理水井、燃料，现如今，通过供水设施、供电设施、天然气管道便能随用随取。这也是信息、算力资源化的大势所趋。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag"># 微服务</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/Hadoop-in-Docker/hadoop-in-docker/" rel="prev" title="Hadoop in Docker">
+                  <i class="fa fa-chevron-left"></i> Hadoop in Docker
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/CSAPP/csapp-note/" rel="next" title="CSAPP-Note">
+                  CSAPP-Note <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Logres</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"left","width":225,"height":450},"mobile":{"show":true},"log":false});</script></body>
+</html>

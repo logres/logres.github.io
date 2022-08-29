@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha256-xejo6yLi6vGtAjcMIsY8BHdKsLg7QynVlFMzdQgUuy8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.logres.tech","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.3","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="由于GIL锁的存在，Python的多线程并不能起到利用多核处理器的作用，对于CPU密集型任务无法提升效率；然而，即使作为IO密集任务的并发机制，线程附带的上下文切换开销也导致了效率的低下。这种场景下，python使用await&#x2F;async关键字提供的协程机制，提供了一种低开销的异步IO机制。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python并发—协程">
+<meta property="og:url" content="https://blog.logres.tech/Python%E5%B9%B6%E5%8F%91%E2%80%94%E5%8D%8F%E7%A8%8B/python%E5%B9%B6%E5%8F%91%E2%80%94%E5%8D%8F%E7%A8%8B/index.html">
+<meta property="og:site_name" content="Logres&#39; Blog">
+<meta property="og:description" content="由于GIL锁的存在，Python的多线程并不能起到利用多核处理器的作用，对于CPU密集型任务无法提升效率；然而，即使作为IO密集任务的并发机制，线程附带的上下文切换开销也导致了效率的低下。这种场景下，python使用await&#x2F;async关键字提供的协程机制，提供了一种低开销的异步IO机制。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-08-09T16:39:09.000Z">
+<meta property="article:modified_time" content="2022-08-29T12:29:50.564Z">
+<meta property="article:author" content="Logres">
+<meta property="article:tag" content="Logres">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.logres.tech/Python%E5%B9%B6%E5%8F%91%E2%80%94%E5%8D%8F%E7%A8%8B/python%E5%B9%B6%E5%8F%91%E2%80%94%E5%8D%8F%E7%A8%8B/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.logres.tech/Python%E5%B9%B6%E5%8F%91%E2%80%94%E5%8D%8F%E7%A8%8B/python%E5%B9%B6%E5%8F%91%E2%80%94%E5%8D%8F%E7%A8%8B/","path":"Python并发—协程/python并发—协程/","title":"Python并发—协程"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Python并发—协程 | Logres' Blog</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Logres' Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">君子不器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-game"><a href="/games/" rel="section"><i class="fa fa-gamepad fa-fw"></i>game</a></li><li class="menu-item menu-item-academic"><a href="/" rel="section"><i class="fa fas fa-graduation-cap fa-fw"></i>academic</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BC%94%E8%BF%9B"><span class="nav-number">1.</span> <span class="nav-text">演进</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%BA%E5%88%B6"><span class="nav-number">2.</span> <span class="nav-text">机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF"><span class="nav-number">2.1.</span> <span class="nav-text">事件循环</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%8F%E7%A8%8B"><span class="nav-number">2.2.</span> <span class="nav-text">协程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Future"><span class="nav-number">2.3.</span> <span class="nav-text">Future</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94%E7%AE%80%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">源码解析——简述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%8F%E7%A8%8B-1"><span class="nav-number">3.1.</span> <span class="nav-text">协程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#await"><span class="nav-number">3.2.</span> <span class="nav-text">await</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Future-1"><span class="nav-number">3.3.</span> <span class="nav-text">Future</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Task%E4%B8%8ECoroutine"><span class="nav-number">3.4.</span> <span class="nav-text">Task与Coroutine</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E6%88%98%E2%80%94%E2%80%94%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AASleep"><span class="nav-number">4.</span> <span class="nav-text">实战——实现一个Sleep</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Logres</p>
+  <div class="site-description" itemprop="description">凡有所学，皆成性格。</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/logres" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;logres" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:logres_king@126.com" title="E-Mail → mailto:logres_king@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.logres.tech/Python%E5%B9%B6%E5%8F%91%E2%80%94%E5%8D%8F%E7%A8%8B/python%E5%B9%B6%E5%8F%91%E2%80%94%E5%8D%8F%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Logres">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Logres' Blog">
+      <meta itemprop="description" content="凡有所学，皆成性格。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Python并发—协程 | Logres' Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Python并发—协程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-08-10 00:39:09" itemprop="dateCreated datePublished" datetime="2022-08-10T00:39:09+08:00">2022-08-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-08-29 20:29:50" itemprop="dateModified" datetime="2022-08-29T20:29:50+08:00">2022-08-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Python%E5%B9%B6%E5%8F%91%E2%80%94%E5%8D%8F%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">Python并发—协程</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>由于GIL锁的存在，Python的多线程并不能起到利用多核处理器的作用，对于CPU密集型任务无法提升效率；然而，即使作为IO密集任务的并发机制，线程附带的上下文切换开销也导致了效率的低下。这种场景下，python使用await&#x2F;async关键字提供的协程机制，提供了一种低开销的异步IO机制。</p>
+<span id="more"></span>
+
+<h2 id="演进"><a href="#演进" class="headerlink" title="演进"></a>演进</h2><p>Python尝试对协程Python3.4开始的，其底层机制为Python中的生成器。</p>
+<h2 id="机制"><a href="#机制" class="headerlink" title="机制"></a>机制</h2><p>异步IO的实现基于几个核心概念：事件循环、协程、Future</p>
+<h3 id="事件循环"><a href="#事件循环" class="headerlink" title="事件循环"></a>事件循环</h3><p>回想刚开始coding的时光，我们编写的程序总是从main开始，然后执行一些操作，而后很快地，以return收尾。</p>
+<h3 id="协程"><a href="#协程" class="headerlink" title="协程"></a>协程</h3><p>一般的同步代码中，函数调用将自己保存本地变量，然后再进入子过程栈帧，最后退出，再恢复之；而异步IO中需要营造出“假同步”的表象，便需要我们自己维护协程的状态，包括局部变量、栈帧、堆栈、指令计数器等等。</p>
+<p>仔细想来，在python中，确乎存在这种执行到一半，暂时退出，下次再执行的机制——生成器。</p>
+<p>仔细看下面这个函数，当执行g &#x3D; generator时，并不会立即执行generator函数，而是会返回一个generator对象，这个函数有两个重要接口——next()和send()。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">generator</span>():</span><br><span class="line">    <span class="keyword">yield</span> <span class="number">1</span></span><br><span class="line">    f = <span class="keyword">yield</span> <span class="number">2</span></span><br><span class="line">    <span class="keyword">yield</span> <span class="number">3</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line">g = generator()</span><br><span class="line"></span><br><span class="line">g.<span class="built_in">next</span>() <span class="comment"># 1</span></span><br><span class="line">g.<span class="built_in">next</span>() <span class="comment"># 2</span></span><br><span class="line">g.send(<span class="number">4</span>) <span class="comment"># 3</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    <span class="built_in">next</span>(g) <span class="comment"># StopIteration</span></span><br><span class="line"><span class="keyword">except</span> StopIteration <span class="keyword">as</span> e:</span><br><span class="line">    <span class="built_in">print</span>(e.value) <span class="comment"># 0</span></span><br></pre></td></tr></table></figure>
+
+<p>每次调用iterator的next()方法，都会返回下一个yield表达式的值。（首次调用时常常需要先执行一次next或send(None),使其执行到第一个yeild处，便于传参）</p>
+<p>generator机制能够提供一种lazy的iterator，即读取时才生成必要数据，减少内存占用；但在此处，却也为协程提供了一种绝好的机制，使用next&#x2F;send调度协程，协程使用yeild&#x2F;yeild from&#x2F;await方法交出控制权，并指明等待对象——IO&#x2F;Future&#x2F;Timer。</p>
+<h3 id="Future"><a href="#Future" class="headerlink" title="Future"></a>Future</h3><p>Future是协程通信机制中的一种，其作为一个跨越于多个协程之间的对象，由等待方进行监听，由被等待方进行触发。监听的实现一般依靠调用Future对象的set_callback方法，将回调函数传入；而被等待方则调用Future对象的set_done方法，不仅结束Future对象，还对回调函数进行调用——回调内容往往是将等待方加入事件循环的调度队列中。而对回调函数的调用则是延迟调用，即将回调函数也加入事件循环，等待事件循环的调度。</p>
+<blockquote>
+<p>在一般的被动式（响应式）编程方案中，我们一般通过传入回调函数来实现异步IO，这种方式的缺点是：当我们的响应函数嵌套太深，回调函数调用路径过长，将导致代码难以维护，同时也使得运行时在回调处理时间过长。延迟调用能很好地避免这方面问题</p>
+</blockquote>
+<h2 id="源码解析——简述"><a href="#源码解析——简述" class="headerlink" title="源码解析——简述"></a>源码解析——简述</h2><h3 id="协程-1"><a href="#协程-1" class="headerlink" title="协程"></a>协程</h3><p>协程的底层实现基于生成器，但是不同于生成器是一个iterable，协程本身仅实现了send方法，而未实现next。</p>
+<h3 id="await"><a href="#await" class="headerlink" title="await"></a>await</h3><p>调用await A 时，若A是协程则略过，否则调用A的__await__方法，获取一个协程。随后调用这个协程，其内部yield一个future or raise一个IterationStop，并将返回值保存在其中返回。对于这两种情况，前者await将yield A yield的future；后者则将继续执行后续语句。</p>
+<p>注意到，若await一个原生的协程，其内部目的往往在于设置一个Timer or IO任务，然后将一个future关联上去，yield出来；而future与task则一般yield自身，future是出于多等一的需要，而task是出于事件循环中Task的互相等待。</p>
+<h3 id="Future-1"><a href="#Future-1" class="headerlink" title="Future"></a>Future</h3><p>在yield future前，A一般会将一个回调函数注入future中，之后在future被set_done时，就会lazy执行这些callback。</p>
+<h3 id="Task与Coroutine"><a href="#Task与Coroutine" class="headerlink" title="Task与Coroutine"></a>Task与Coroutine</h3><p>Task是一个协程的封装，它是一个Future的子类，它的作用是将协程转换为一个可以被调度的对象(__step函数)。</p>
+<h2 id="实战——实现一个Sleep"><a href="#实战——实现一个Sleep" class="headerlink" title="实战——实现一个Sleep"></a>实战——实现一个Sleep</h2><p>python协程的使用案例网络上的例子相当之多，此处我不打算再重复一遍，而是通过手动实现一个sleep功能，来帮助深入理解协程及其事件循环的机理。</p>
+<p>下面是一段再寻常不过的异步代码，但是其中的sleep的实现却涉及到事件循环的Timer、以及直接yield future。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    <span class="keyword">await</span> asyncio.sleep(<span class="number">1</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;Hello&#x27;</span>)</span><br><span class="line"></span><br><span class="line">asyncio.run(main())</span><br></pre></td></tr></table></figure>
+
+<p>首先我们要知道，python原生的协程中是不能使用yield关键字的，其只能使用await(yield from)。于是乎，我们无法在async def中通过生成future再抛出的方式来实现sleep。剩下的方案便剩下求助于基于生成器的协程。asyncio中便是如此实现的。</p>
+<p>下面为python中对sleep函数的实现。可以看到，由于使用的是基于生成器的协程，可以直接yield一个None，以及使用yield from一个future。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@coroutine</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">sleep</span>(<span class="params">delay, result=<span class="literal">None</span>, *, loop=<span class="literal">None</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Coroutine that completes after a given time (in seconds).&quot;&quot;&quot;</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">helper</span>:</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">__await__</span>(<span class="params">self</span>):</span><br><span class="line">            <span class="keyword">yield</span> <span class="literal">None</span></span><br><span class="line">        </span><br><span class="line">        __iter__ = __await__</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> delay==<span class="number">1</span>:</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">from</span> helper()</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> loop <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        loop = events.get_event_loop()</span><br><span class="line">    future = loop.create_future()</span><br><span class="line">    h = future._loop.call_later(delay,</span><br><span class="line">                                futures._set_result_unless_cancelled,</span><br><span class="line">                                future, result)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">return</span> (<span class="keyword">yield</span> <span class="keyword">from</span> future)</span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        h.cancel()</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>值得注意的是，在设置h的时候，我们使用了future._loop.call_later，这个函数的作用是设置一个定时器，当定时器触发时，将future的结果设置为result。</p>
+</blockquote>
+<p>但是，我们知道，现在在python中使用@coroutine注解是一种depreciated的行为，并且python计划在python3.11版本移除这个注解，那么届时该如何实现sleep呢？</p>
+<p>回顾我们对await关键字的讨论，其后面可以跟三种东西: coroutines、awaitables。既然我们无法在coroutines中使用yield，那么我们只能使用awaitables。</p>
+<p>如下，我们在协程test2中定义了一个helper类，其中实现了__await__方法，这个方法返回一个生成器，其中按照delay yield一个设置了定时器的future。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">import</span> selectors</span><br><span class="line"><span class="keyword">from</span> asyncio <span class="keyword">import</span> futures,events</span><br><span class="line"><span class="keyword">from</span> types <span class="keyword">import</span> coroutine</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">test2</span>():</span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">helper</span>:</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self,delay</span>):</span><br><span class="line">            self.delay = delay</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">__await__</span>(<span class="params">self,loop=<span class="literal">None</span></span>):</span><br><span class="line">            delay = self.delay</span><br><span class="line">            result = <span class="string">&quot;&quot;</span></span><br><span class="line">            <span class="keyword">if</span> delay==<span class="number">1</span>:</span><br><span class="line">                <span class="keyword">yield</span> <span class="literal">None</span></span><br><span class="line">                <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> loop <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">                loop = events.get_event_loop()</span><br><span class="line">            future = loop.create_future()</span><br><span class="line">            h = future._loop.call_later(delay,</span><br><span class="line">                                        futures._set_result_unless_cancelled,</span><br><span class="line">                                        future, result)</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                <span class="keyword">return</span> (<span class="keyword">yield</span> <span class="keyword">from</span> future)</span><br><span class="line">            <span class="keyword">finally</span>:</span><br><span class="line">                h.cancel()</span><br><span class="line"></span><br><span class="line">        <span class="comment">#__iter__ = __await__</span></span><br><span class="line">    <span class="keyword">await</span> helper(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">selector = selectors.SelectSelector()</span><br><span class="line">loop = asyncio.SelectorEventLoop(selector)</span><br><span class="line">asyncio.set_event_loop(loop)</span><br><span class="line">loop.run_until_complete(test2())</span><br></pre></td></tr></table></figure>
+
+<p>如此便能够实现自己的sleep，类似的，对于epoll的事件注册也可以通过这种形式来完成。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/%E6%84%8F%E4%B9%89%E4%B8%8D%E6%98%8E%E7%9A%84%E7%9F%A5%E8%AF%86%E7%82%B9/%E6%84%8F%E4%B9%89%E4%B8%8D%E6%98%8E%E7%9A%84%E7%9F%A5%E8%AF%86%E7%82%B9/" rel="prev" title="意义不明的知识点">
+                  <i class="fa fa-chevron-left"></i> 意义不明的知识点
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/Redis-Data-Structure/redis-data-structure/" rel="next" title="Redis Data Structure">
+                  Redis Data Structure <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Logres</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"left","width":225,"height":450},"mobile":{"show":true},"log":false});</script></body>
+</html>

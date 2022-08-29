@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha256-xejo6yLi6vGtAjcMIsY8BHdKsLg7QynVlFMzdQgUuy8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.logres.tech","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.3","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="或是实践引发思考，亦或是网上冲浪时get的知识，作为一个勤于思考的准程序员，我总能收集到一些奇怪的知识点。一般来说，应该记录下自己对这些知识点的思考历程、验证实验啥的，但奈何“懒鬼上身”，也就不了了之了…… Logres，我该怎么说你呢？业荒于嬉啊！ 不过说归那么说，还是需要在此进行简短的记录的，否则待到彻底忘记，那就真的白学了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="意义不明的知识点">
+<meta property="og:url" content="https://blog.logres.tech/%E6%84%8F%E4%B9%89%E4%B8%8D%E6%98%8E%E7%9A%84%E7%9F%A5%E8%AF%86%E7%82%B9/%E6%84%8F%E4%B9%89%E4%B8%8D%E6%98%8E%E7%9A%84%E7%9F%A5%E8%AF%86%E7%82%B9/index.html">
+<meta property="og:site_name" content="Logres&#39; Blog">
+<meta property="og:description" content="或是实践引发思考，亦或是网上冲浪时get的知识，作为一个勤于思考的准程序员，我总能收集到一些奇怪的知识点。一般来说，应该记录下自己对这些知识点的思考历程、验证实验啥的，但奈何“懒鬼上身”，也就不了了之了…… Logres，我该怎么说你呢？业荒于嬉啊！ 不过说归那么说，还是需要在此进行简短的记录的，否则待到彻底忘记，那就真的白学了。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-08-08T17:35:32.000Z">
+<meta property="article:modified_time" content="2022-08-29T12:29:50.568Z">
+<meta property="article:author" content="Logres">
+<meta property="article:tag" content="Logres">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.logres.tech/%E6%84%8F%E4%B9%89%E4%B8%8D%E6%98%8E%E7%9A%84%E7%9F%A5%E8%AF%86%E7%82%B9/%E6%84%8F%E4%B9%89%E4%B8%8D%E6%98%8E%E7%9A%84%E7%9F%A5%E8%AF%86%E7%82%B9/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.logres.tech/%E6%84%8F%E4%B9%89%E4%B8%8D%E6%98%8E%E7%9A%84%E7%9F%A5%E8%AF%86%E7%82%B9/%E6%84%8F%E4%B9%89%E4%B8%8D%E6%98%8E%E7%9A%84%E7%9F%A5%E8%AF%86%E7%82%B9/","path":"意义不明的知识点/意义不明的知识点/","title":"意义不明的知识点"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>意义不明的知识点 | Logres' Blog</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Logres' Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">君子不器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-game"><a href="/games/" rel="section"><i class="fa fa-gamepad fa-fw"></i>game</a></li><li class="menu-item menu-item-academic"><a href="/" rel="section"><i class="fa fas fa-graduation-cap fa-fw"></i>academic</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E9%87%8D%E5%85%A5%E4%B8%8E%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="nav-number">1.</span> <span class="nav-text">可重入与线程安全</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#python-private%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">python private方法调用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#python%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">python进程模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="nav-number">4.</span> <span class="nav-text">布隆过滤器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dict-x2F-map%E7%9A%84hash%E5%AE%9E%E7%8E%B0%E4%B8%8E%E6%A0%91%E5%AE%9E%E7%8E%B0"><span class="nav-number">5.</span> <span class="nav-text">dict&#x2F;map的hash实现与树实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mmap%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84"><span class="nav-number">6.</span> <span class="nav-text">mmap内存映射</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WebServer%E4%B8%8ESpring%E6%A1%86%E6%9E%B6"><span class="nav-number">7.</span> <span class="nav-text">WebServer与Spring框架</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Web%E6%A1%86%E6%9E%B6"><span class="nav-number">7.1.</span> <span class="nav-text">Web框架</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring"><span class="nav-number">7.2.</span> <span class="nav-text">Spring</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%88%E8%B0%88IOC"><span class="nav-number">8.</span> <span class="nav-text">谈谈IOC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%88%E8%B0%88%E5%8F%98%E9%87%8F%E3%80%81%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E4%B8%8E%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92"><span class="nav-number">9.</span> <span class="nav-text">谈谈变量、内存分配与参数传递</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#C"><span class="nav-number">9.1.</span> <span class="nav-text">C</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java"><span class="nav-number">9.2.</span> <span class="nav-text">Java</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Python"><span class="nav-number">9.3.</span> <span class="nav-text">Python</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Go"><span class="nav-number">9.4.</span> <span class="nav-text">Go</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Logres</p>
+  <div class="site-description" itemprop="description">凡有所学，皆成性格。</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/logres" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;logres" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:logres_king@126.com" title="E-Mail → mailto:logres_king@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.logres.tech/%E6%84%8F%E4%B9%89%E4%B8%8D%E6%98%8E%E7%9A%84%E7%9F%A5%E8%AF%86%E7%82%B9/%E6%84%8F%E4%B9%89%E4%B8%8D%E6%98%8E%E7%9A%84%E7%9F%A5%E8%AF%86%E7%82%B9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Logres">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Logres' Blog">
+      <meta itemprop="description" content="凡有所学，皆成性格。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="意义不明的知识点 | Logres' Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          意义不明的知识点
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-08-09 01:35:32" itemprop="dateCreated datePublished" datetime="2022-08-09T01:35:32+08:00">2022-08-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-08-29 20:29:50" itemprop="dateModified" datetime="2022-08-29T20:29:50+08:00">2022-08-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%84%8F%E4%B9%89%E4%B8%8D%E6%98%8E%E7%9A%84%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">意义不明的知识点</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>或是实践引发思考，亦或是网上冲浪时get的知识，作为一个勤于思考的准程序员，我总能收集到一些奇怪的知识点。一般来说，应该记录下自己对这些知识点的思考历程、验证实验啥的，但奈何“懒鬼上身”，也就不了了之了…… Logres，我该怎么说你呢？业荒于嬉啊！</p>
+<p>不过说归那么说，还是需要在此进行简短的记录的，否则待到彻底忘记，那就真的白学了。</p>
+<span id="more"></span>
+
+<h2 id="可重入与线程安全"><a href="#可重入与线程安全" class="headerlink" title="可重入与线程安全"></a>可重入与线程安全</h2><p><strong>线程安全</strong>要求不同线程不能同时访问临界区；而<strong>可重入</strong>在线程安全的基础上还要求同一线程能够嵌套访问临界区。</p>
+<p>狭义而言，线程安全与可重入是相对独立的两个概念。</p>
+<p>对于线程安全，通过加锁，我们能通过防止不同的线程同时执行临界区代码来保证；</p>
+<p>对于可重入，在单线程情景下，嵌套调用的过程中，局部变量将由调用机制得到保护，但是全局变量则不在此列，这是不可重入的来源。而通过手动保护使用到的非局部变量或干脆避免使用，我们便能够实现可重入。</p>
+<p>线程安全的加锁机制，阻止了单线程下实现的可重入，因为虽然我们保证手动保存全局变量，但锁直接阻止了其他线程的访问。</p>
+<p>当然，这一块的讨论存在许多争议，参考的论坛、文章：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/352218464">可重入(reentrancy) vs. 线程安全(thread-safety)</a></li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/856823/threadsafe-vs-re-entrant">Threadsafe vs re-entrant</a></li>
+</ol>
+<p>待我找到靠谱资料再细细分析~</p>
+<h2 id="python-private方法调用"><a href="#python-private方法调用" class="headerlink" title="python private方法调用"></a>python private方法调用</h2><p>我们知道，在python中并没有访问修饰符这一概念，但是，不同的命名却起到了这一功能：</p>
+<ol>
+<li>_开头的方法，是库作者不希望用户使用的<strong>弱私有</strong>方法，在import *时将会被忽略，然而在对象中还是用户可见。</li>
+<li>__开头的方法(注意，不能以双下划线结尾)，是外部<strong>无法访问到</strong>”的<strong>强私有</strong>方法，无法从对象中访问到。但是，该方法仅仅是被替换了姓名罢了，还是可以被访问到的。具体方法为：</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Test</span>:</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__private</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;private&quot;</span>)</span><br><span class="line"></span><br><span class="line">test = Test()</span><br><span class="line">test._Test__private()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="python进程模型"><a href="#python进程模型" class="headerlink" title="python进程模型"></a>python进程模型</h2><p>multiprocessing模块提供了一个Process类来代表一个进程，该类提供了一些方法来控制进程的生命周期，比如start、join、terminate等。然而我们该如何理解python的进程与操作系统进程间的关系呢？</p>
+<p>首先需要理解python进程的结构，python进程以python解释器为主导，对编译后的字节码进行解释执行。在python中创造子进程，对应地在操作系统内核中也需要创建进程。</p>
+<p>进程作为系统资源，是非常敏感的，需要由系统调用来操作，然而不同操作系统提供的系统调用不尽相同，python作为一种跨平台语言，自然需要兼容不同操作系统的进程方案。</p>
+<p>在类uinx操作系统中，我们使用fork来创建进程，而在windows操作系统中，我们使用CreateProcess来创建进程，这些差异都被python的Popen库所包装，提供一致的接口。但其中亦非简单地调用系统调用中的fork、CreateProcess，而是又除了最基础的fork外，又追加了spawn与forksever两种方案。</p>
+<p>总的来说：</p>
+<ul>
+<li>fork：fork方案即Unix系统下的最朴素地方案，其写时复制父进程，并从fork()返回，依据返回值判定所处进程，执行不同操作。这种方案执行块(因为是写时复制)，但也存在许多问题，一方面完全复制将共享父进程的文件描述符、套接字等资源，这些资源对于子进程有时是不必要的；另一方面，复制却不会复制父进程的子线程，导致在多线程环境下，子进程中可能存在一些资源导致的死锁问题。</li>
+<li>spawn：spawn是与fork截然不同的思路，符合Windows下CreateProcess中父子进程耦合低的特点。其主要思路即创建一个全新空白的进程，然后从父进程将需要执行的函数（一般子进程就是为了执行某一个函数）的相关数据通过IPC传入子进程，然后再开始执行。这种方案避免了fork中的高耦合带来的各种问题，但由于执行一个python进程仍旧需要加载python解释器等相关资源，其效率并不高。PS:fork后调用exec即可实现spawn</li>
+<li>forkserver：forkserver是一种用于在需要多个子进程的情景下，对spawn与fork的结合补充。我们之前提到过，fork速度快，但由于继承父进程资源，问题多；spawn安全，但由于需要加载python环境，较慢。于是，我们可以先spawn出一个干净的forkserver，之后每次需要新的子进程就fork这个forkserver。这样一来，就实现了安全与高效的多进程解决方案。当然，现在一般使用进程池来应对多进程场景，forkserver使用较少。</li>
+</ul>
+<h2 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h2><p>之前看缓存问题时了解到了缓存穿透的部分解决方法，除了一般的对请求进行检验外，还有一种方法即布隆过滤器。布隆过滤器是一种空间效率很高的随机数据结构，它可以用来告诉你，一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率和删除困难。</p>
+<p>具体来讲，布隆过滤器使用一个bit数组，对于每个键值，使用多个hash函数，并将bit数组中对应索引的几个位置1，这样完成一个键值的插入。</p>
+<p>当需要查找时，使用hash函数计算出其对应的几位，在bit数组中查找之，若都为1，则可能存在；若有一位为0，则一定不存在。</p>
+<p>布隆过滤器能够实现高效的缓存存在性判断，虽然存在一定的误报率，但只要使用合适长度的bit数组，可以一定程度避免这个问题。当然，其最大问题在于难以支持删除。</p>
+<h2 id="dict-x2F-map的hash实现与树实现"><a href="#dict-x2F-map的hash实现与树实现" class="headerlink" title="dict&#x2F;map的hash实现与树实现"></a>dict&#x2F;map的hash实现与树实现</h2><p>dict&#x2F;map是非常常用的数据结构。在python中，dict&#x2F;map的实现是基于hash的，即使用hash函数将键值映射到一个数组中，然后在数组中查找对应的值。这种实现方式的优点是查询速度快，缺点是空间利用率低，当键值过多时，会出现hash碰撞，导致查询速度变慢，一般使用开发定址或链地址解决。<br>在java中，除基于hash的hashmap，还存在基于树的treemap，其底层使用红黑树或者平衡二叉树等数据结构来实现。这种实现方式的优点是空间利用率高，缺点是查询速度慢。</p>
+<h2 id="mmap内存映射"><a href="#mmap内存映射" class="headerlink" title="mmap内存映射"></a>mmap内存映射</h2><p>一句话总结：虚拟内存调度下内存页总与磁盘上的交换文件间来回交换，因而虚拟内存限制了总可用内存的大小。mmap不使用交换文件，而是将虚拟内存页映射到磁盘文件上，这样可以将对文件操作变更为对内存操作，从而提高效率。</p>
+<h2 id="WebServer与Spring框架"><a href="#WebServer与Spring框架" class="headerlink" title="WebServer与Spring框架"></a>WebServer与Spring框架</h2><p>这一块内容值得分为两块去说：</p>
+<ol>
+<li>Web框架</li>
+<li>Spring</li>
+</ol>
+<h3 id="Web框架"><a href="#Web框架" class="headerlink" title="Web框架"></a>Web框架</h3><p>了解MVC之前，我们需要先认识一下WebServer与Web框架。在互联网刚开始的时候，即Web1.0时代，大多网页主要起一个信息展示的功能，基本都是静态网页，通过跳转实现浏览。这时候可以说只有WebServer，而没有Web框架。</p>
+<p>到了Web2.0时代，页面元素多媒体化，静态元素装不下；交互需求如评论，得不到满足；前端js兴起，不需要页面跳转。动态Web请求成为主流，Web服务器不再是一个index.html文件的搬运工，而需要动态生成数据。</p>
+<p>诚然，我们可以在WebServer中进行实现，但这无疑带来巨大耦合，所以一般单独拆一层出来，即Web框架，用于处理动态请求。这之间呢，就需要一个标准接口对两方进行适配，最初的接口标准叫CGI，即通用网关接口。CGI的工作原理是，WebServer接收到请求后，将请求信息传递给Web框架，Web框架处理后将结果返回给WebServer，WebServer再将结果返回给客户端。这样，WebServer与Web框架之间就解耦了。</p>
+<p>在python中，这个接口层叫WSGI、ASGI，而在Java中，对应的就是Servlet这套东西了。</p>
+<p>一般使用WebServer，Web框架需要对每一个Servlet单独进行实现，并映射到指定http路径上，之后WebServer就能分派请求，完成整个请求的处理。这种模式下，众多Servlet虽然是Web开发者实现的，然而其却是由WebServer进行管理的，许多需求难以得到满足，比如无法进行同一异常处理等。索性使用<strong>dispatcherServlet</strong>，从WebServer初取来所有请求，让后自己内部使用众多自定义的Controller实现，这下便可以统一调用数据层、视图层了。</p>
+<h3 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h3><p>再说Spring，Spring中除了提供MVC这样的模式之外，还实现了IOC，也就是控制反转，将全局中的大多对象交由一个Bean容器管理，而无需类自己管理。</p>
+<p>最早使用xml配置，现在一般使用annotation对需要管理的对象&#x2F;类进行标识。</p>
+<ol>
+<li>@Component：一般用于标识一个类，表示这个类是一个Bean，可以被Spring容器管理</li>
+<li>@Bean：一般用于标注在一个返回Bean的方法上，表示这个方法返回的Bean可以被Spring容器管理，常见于对第三方类的管理。</li>
+<li>@Service：同Component，表示业务逻辑</li>
+<li>@Repository：同Component，表示数据层</li>
+<li>@Controller：同Component，表示控制层</li>
+</ol>
+<p>WebServer启动后，或是通过实例化Servlet或是通过某个Listener，开始Spring的生命周期。一般会先扫描所有标识了Component的类，然后将其实例化，放入Bean容器中，之后，将自身挂靠在dispatcherServlet下。</p>
+<h2 id="谈谈IOC"><a href="#谈谈IOC" class="headerlink" title="谈谈IOC"></a>谈谈IOC</h2><p>遥记开始学习编程的时候，我们总与main函数相伴。到后来，接触了Spring、FastAPI等框架，我们就再也没有在main中编写过自己的代码了。</p>
+<p>框架为我们实现了程序间共通的一切，网络调用、数据库连接等等，而我们仅需要完成自己程序独立的业务逻辑，等待框架调用即可。程序的控制流不再受自己掌控，而被框架拿捏，这便是Inversion of Control（IOC）。</p>
+<p>IOC是一种编程思想，对其的实现多种多样。其中，在Web框架领域最为兴盛的莫过于Dependence Injection与Server Locator。</p>
+<p>Dependence Injection即将组件间的依赖交由框架来管理，实现系统中组件间的正确依赖链，而免去手动管理组件生命周期的过程；Server Locator亦是这么一种思想，但仍旧存在组件显示向Server Locator申请依赖对象的过程，故不太被推崇。</p>
+<p>此外，模板模式、策略模式，以及UI逻辑等，也是IOC思想的体现。</p>
+<h2 id="谈谈变量、内存分配与参数传递"><a href="#谈谈变量、内存分配与参数传递" class="headerlink" title="谈谈变量、内存分配与参数传递"></a>谈谈变量、内存分配与参数传递</h2><p>学习一门语言，需要学习其基本语法逻辑。现代通用编程语言，其间的变量定义、循环、分支等逻辑基本都是相通的，但这绝不意味着学会一门语言后能够很快上手其他语言——我们需要在思想中对语言的行为建模，才能深入地理解语言的特性，对语言的种种特性得到一种普适的解释，否则，依靠死记硬背规则、特例进行编程，将给我们带来极大的心智负担，全然不能说是掌握了这门语言。</p>
+<h3 id="C"><a href="#C" class="headerlink" title="C"></a>C</h3><p>C这门语言的模型可以说是十分面向计算机系统的，我们可以在所有的操作系统课程中了解到一个C语言进程的内存分布，所有语句在编译时、运行时的行为。</p>
+<h3 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h3><p>Java是对C++的一种简化与改善。</p>
+<h3 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h3><p>python是一种具有极其简洁设计思想的语言，其中，所有元素，包括基本类型、一般类对象，以及函数，都被建立为对象，存放在<strong>堆</strong>中，而所有对这些对象的引用被存放在栈中。</p>
+<p>由于python中的对象仅能够通过引用进行访问，故其参数传递是完全的传引用。</p>
+<h3 id="Go"><a href="#Go" class="headerlink" title="Go"></a>Go</h3><p>go语言是我接触的第一门带GC的编译型语言，其对象内存的回收不依赖于一个统筹万物的虚拟机、解释器，而完全通过编译时的判断进行。由于依赖于编译器进行优化，一样的语句在不同程序中完全可能对应着不同的实现。</p>
+<p>例如，在Go中声明一个对象，按照C的逻辑，其应该存在于栈上，但假若我持有其指针，离开这个函数，却依旧能访问到这个对象，这对于C是不可想象的，而Go的编译器却能够在编译时判断到这一点，在声明时将其存入堆中。</p>
+<p>这样的逻辑模糊了我们的心智模型，但却简化了操作，是好是坏，有待考量。</p>
+<p>值得一提的是，Go的传参，与python全然不同，是完全传值的！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/%E6%B5%85%E8%AF%B4Return/%E6%B5%85%E8%AF%B4return/" rel="prev" title="浅说Return">
+                  <i class="fa fa-chevron-left"></i> 浅说Return
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/Python%E5%B9%B6%E5%8F%91%E2%80%94%E5%8D%8F%E7%A8%8B/python%E5%B9%B6%E5%8F%91%E2%80%94%E5%8D%8F%E7%A8%8B/" rel="next" title="Python并发—协程">
+                  Python并发—协程 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Logres</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"left","width":225,"height":450},"mobile":{"show":true},"log":false});</script></body>
+</html>
