@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha256-xejo6yLi6vGtAjcMIsY8BHdKsLg7QynVlFMzdQgUuy8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.logres.tech","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.3","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="学习Docker多时，但是从来没有打包过稍微复杂些的镜像，未免有些遗憾。这次借乘着学习hadoop的机会，顺带折腾折腾比较复杂的dockerfile。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hadoop in Docker">
+<meta property="og:url" content="https://blog.logres.tech/Technology/Software-Engineering/Docker/hadoop-in-docker/index.html">
+<meta property="og:site_name" content="Logres&#39; Blog">
+<meta property="og:description" content="学习Docker多时，但是从来没有打包过稍微复杂些的镜像，未免有些遗憾。这次借乘着学习hadoop的机会，顺带折腾折腾比较复杂的dockerfile。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-18T15:03:42.000Z">
+<meta property="article:modified_time" content="2022-04-20T09:50:55.870Z">
+<meta property="article:author" content="Logres">
+<meta property="article:tag" content="Logres">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.logres.tech/Technology/Software-Engineering/Docker/hadoop-in-docker/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.logres.tech/Technology/Software-Engineering/Docker/hadoop-in-docker/","path":"Technology/Software-Engineering/Docker/hadoop-in-docker/","title":"Hadoop in Docker"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Hadoop in Docker | Logres' Blog</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Logres' Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">君子不器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-game"><a href="/" rel="section"><i class="fa fa-gamepad fa-fw"></i>game</a></li><li class="menu-item menu-item-academic"><a href="/" rel="section"><i class="fa fas fa-graduation-cap fa-fw"></i>academic</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hadoop"><span class="nav-number">1.</span> <span class="nav-text">Hadoop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F%E6%9E%84%E5%BB%BA"><span class="nav-number">2.</span> <span class="nav-text">基础镜像构建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4"><span class="nav-number">3.</span> <span class="nav-text">集群</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90"><span class="nav-number">3.1.</span> <span class="nav-text">问题分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3"><span class="nav-number">3.2.</span> <span class="nav-text">解决</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2"><span class="nav-number">4.</span> <span class="nav-text">部署</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Logres</p>
+  <div class="site-description" itemprop="description">凡有所学，皆成性格。</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/logres" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;logres" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:logres_king@126.com" title="E-Mail → mailto:logres_king@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.logres.tech/Technology/Software-Engineering/Docker/hadoop-in-docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Logres">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Logres' Blog">
+      <meta itemprop="description" content="凡有所学，皆成性格。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Hadoop in Docker | Logres' Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hadoop in Docker
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-04-18 23:03:42" itemprop="dateCreated datePublished" datetime="2022-04-18T23:03:42+08:00">2022-04-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-04-20 17:50:55" itemprop="dateModified" datetime="2022-04-20T17:50:55+08:00">2022-04-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Technology/" itemprop="url" rel="index"><span itemprop="name">Technology</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Technology/Software-Engineering/" itemprop="url" rel="index"><span itemprop="name">Software Engineering</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Technology/Software-Engineering/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>学习Docker多时，但是从来没有打包过稍微复杂些的镜像，未免有些遗憾。这次借乘着学习hadoop的机会，顺带折腾折腾比较复杂的dockerfile。</p>
+<span id="more"></span>
+
+<h2 id="Hadoop"><a href="#Hadoop" class="headerlink" title="Hadoop"></a>Hadoop</h2><p>Docker只是一个容器运行工具，要部署hadoop，首先需要了解hadoop的组成。但鉴于篇幅有限（我也不懂），所以就简单讲讲，点到为止。</p>
+<p>Hadoop集群由5个部分组成：</p>
+<ol>
+<li>NameNode</li>
+<li>DataNode</li>
+<li>HistoryServer</li>
+<li>SourceManager</li>
+<li>SecondaryNameNode</li>
+</ol>
+<p>具体干啥，这篇文章就不细讲，大致就是NameNode管理DataNode，SourceManager负责资源分配，HistoryServer负责日志管理，而SecondaryNameNode负责备份。</p>
+<p>从简起见，本次集群搭建仅涉及NameNode和DataNode，SecondaryNameNode其他部分可以省略。</p>
+<p>其中，NameNode与SecondaryNameNode在Master节点上，而DataNode则在slave节点上。</p>
+<h2 id="基础镜像构建"><a href="#基础镜像构建" class="headerlink" title="基础镜像构建"></a>基础镜像构建</h2><p>说是Master与Slave，但其实其中的配置文件基本一致，所以，通过构建一个基础镜像，就能够启动一个Hadoop集群中的所有节点，只需定义不同节点的行为，就能顺利运行集群了。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> debian:stable</span><br><span class="line"></span><br><span class="line"><span class="keyword">LABEL</span><span class="language-bash"> <span class="string">&quot;auther&quot;</span>=<span class="string">&quot;Logres&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /root</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#配置ip解析</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> hostname /etc/hostname</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#容器换http源</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> sources-http.list /etc/apt/sources.list</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取https证书验证器</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt update &amp;&amp; apt install -y apt-transport-https ca-certificates</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#配置https源</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> sources-https.list /etc/apt/sources.list</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#下载 openssh-server, openjdk and wget</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt update &amp;&amp; apt install -y openssh-server default-jdk</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#安装hadoop</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> hadoop-3.2.3.tar.gz /root/hadoop-3.2.3.tar.gz</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> tar -xzvf hadoop-3.2.3.tar.gz &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">mv</span> hadoop-3.2.3 /usr/local/hadoop &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">rm</span> hadoop-3.2.3.tar.gz</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#配置环境变量</span></span><br><span class="line"><span class="keyword">ENV</span> JAVA_HOME=/usr/lib/jvm/default-java</span><br><span class="line"><span class="keyword">ENV</span> HADOOP_HOME=/usr/local/hadoop</span><br><span class="line"><span class="keyword">ENV</span> PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin</span><br><span class="line"></span><br><span class="line"><span class="comment">#ssh配置 密匙生成 及 公钥添加</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> ssh-keygen -t rsa -f ~/.ssh/id_rsa -P <span class="string">&#x27;&#x27;</span> &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">cat</span> ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#生成所需文件夹</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">mkdir</span> -p ~/hdfs/namenode &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">mkdir</span> -p ~/hdfs/datanode &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">mkdir</span> <span class="variable">$HADOOP_HOME</span>/logs</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#复制配置文件</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> config/* /temp/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#移动配置文件到正确的位置</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">mv</span> /temp/hadoop-env.sh <span class="variable">$HADOOP_HOME</span>/etc/hadoop/hadoop-env.sh &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">mv</span> /temp/hdfs-site.xml <span class="variable">$HADOOP_HOME</span>/etc/hadoop/hdfs-site.xml &amp;&amp; \ </span></span><br><span class="line">    mv /temp/core-site.xml $HADOOP_HOME/etc/hadoop/core-site.xml &amp;&amp; \</span><br><span class="line">    mv /temp/mapred-site.xml $HADOOP_HOME/etc/hadoop/mapred-site.xml &amp;&amp; \</span><br><span class="line">    mv /temp/workers $HADOOP_HOME/etc/hadoop/workers &amp;&amp; \</span><br><span class="line">    mv /temp/masters $HADOOP_HOME/etc/hadoop/masters &amp;&amp; \</span><br><span class="line">    mv /temp/start.sh ~/start.sh &amp;&amp; \</span><br><span class="line">    mv /temp/init.sh ~/init.sh</span><br><span class="line"></span><br><span class="line"><span class="comment">#文件执行权限</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">chmod</span> +x <span class="variable">$HADOOP_HOME</span>/sbin/* &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">chmod</span> +x ~/start.sh &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">chmod</span> +x ~/init.sh &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">chmod</span> +x <span class="variable">$HADOOP_HOME</span>/bin/*</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> /usr/local/hadoop/bin/hdfs namenode -format</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>配置文件基本如上。值得注意的是：</p>
+<ol>
+<li>对于文件配置，我选择写好配置文件，在构建镜像时COPY进去，而非在RUN中通过指令进行编辑。这样可以大大简化Dockerfile，提高可读性，坏处是需要外挂文件才能使用Dockerfile，而不能一个Dockerfile走天下了。</li>
+<li>为了使用apt在国内进行下载，需要配置apt源。其中还有闹心事：https源无法解析，还需要先添加http源，apt安装证书解析，然后再添加https源，最后再下载需要的软件。</li>
+<li>Hadoop集群间使用ssh通信，为了实现免密通信，直接使用ssh-keygen使用无密码生成密匙，再将自己的公匙放入自己的认证列表，这样，同一个镜像生成的所有容器都可以使用相同的密匙进行通信；如果需要为每个节点特制镜像的话，就不能这么做了。</li>
+<li>hostname，为了使hadoop能解析hostname，还需要专门配置hostname文件，当然，也可以通过设置hadoop的解析方式来直接解析ip——集群设定的ip，这样就不需要配置hostname文件了（代价是，进一步耦合了）</li>
+</ol>
+<h2 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h2><p>虽然基础镜像十分复杂，但容器集群的配置就相对简单了。Docker-Compose如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3&quot;</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">master:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">hadoop-logres/1.0</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9870:9870&quot;</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="attr">virtual_net:</span></span><br><span class="line">        <span class="attr">ipv4_address:</span> <span class="number">192.169</span><span class="number">.0</span><span class="number">.100</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./words:/root/words&quot;</span></span><br><span class="line">    <span class="comment">#stdin_open: true # -i interactive</span></span><br><span class="line">    <span class="attr">tty:</span> <span class="literal">true</span> <span class="comment"># -t tty</span></span><br><span class="line">    </span><br><span class="line">    <span class="attr">entrypoint:</span> [<span class="string">&quot;sh&quot;</span>]</span><br><span class="line"></span><br><span class="line">  <span class="attr">slave1:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">hadoop-logres/1.0</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="attr">virtual_net:</span></span><br><span class="line">        <span class="attr">ipv4_address:</span> <span class="number">192.169</span><span class="number">.0</span><span class="number">.2</span></span><br><span class="line">    <span class="comment">#stdin_open: true # -i interactive</span></span><br><span class="line">    <span class="attr">tty:</span> <span class="literal">true</span> <span class="comment"># -t tty</span></span><br><span class="line">    <span class="attr">entrypoint:</span> [<span class="string">&quot;sh&quot;</span>]</span><br><span class="line"></span><br><span class="line">  <span class="attr">slave2:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">hadoop-logres/1.0</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="attr">virtual_net:</span></span><br><span class="line">        <span class="attr">ipv4_address:</span> <span class="number">192.169</span><span class="number">.0</span><span class="number">.3</span></span><br><span class="line">    <span class="comment">#stdin_open: true # -i interactive</span></span><br><span class="line">    <span class="attr">tty:</span> <span class="literal">true</span> <span class="comment"># -t tty</span></span><br><span class="line">    <span class="attr">entrypoint:</span> [<span class="string">&quot;sh&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">virtual_net:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">bridge</span></span><br><span class="line">    <span class="attr">ipam:</span></span><br><span class="line">      <span class="attr">driver:</span> <span class="string">default</span></span><br><span class="line">      <span class="attr">config:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">subnet:</span> <span class="number">192.169</span><span class="number">.0</span><span class="number">.0</span><span class="string">/16</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>仅需配置好容器集群的虚拟网络，以及每一个容器的ip，即完成了集群的配置。</p>
+<p>但是，重头戏还在后头呢！</p>
+<p>输入指令：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose up</span><br></pre></td></tr></table></figure>
+
+<p>集群启动！</p>
+<p>然后：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">root@MSI:~/HadoopLogres# docker-compose up</span><br><span class="line">Recreating hadooplogres_master_1 ... done</span><br><span class="line">Starting hadooplogres_slave1_1   ... done</span><br><span class="line">Starting hadooplogres_slave2_1   ... done</span><br><span class="line">Attaching to hadooplogres_slave2_1, hadooplogres_slave1_1, hadooplogres_master_1</span><br><span class="line">master_1  | Starting OpenBSD Secure Shell server: sshdExtra argument &amp;&amp;.</span><br><span class="line">master_1  |  failed!</span><br><span class="line">slave2_1  | Starting OpenBSD Secure Shell server: sshdExtra argument &amp;&amp;.</span><br><span class="line">slave1_1  | Starting OpenBSD Secure Shell server: sshdExtra argument &amp;&amp;.</span><br><span class="line">slave1_1  |  failed!</span><br><span class="line">slave2_1  |  failed!</span><br><span class="line">hadooplogres_slave1_1 exited with code 0</span><br><span class="line">hadooplogres_slave2_1 exited with code 0</span><br><span class="line">hadooplogres_master_1 exited with code 0</span><br></pre></td></tr></table></figure>
+
+<p>我集群呢？我那么大个集群呢？</p>
+<h3 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h3><p>我们都知道，容器是应用程序的封装，而非服务器的封装，当其封装的应用进程结束后，容器的生命也就结束了。</p>
+<p>在我们的hadoop集群中，hadoop程序事实上都是以后台守护进程的形式运行的，也就是说，用于启动其的指令start-dfs.sh等指令执行完毕后，容器就关闭了。这当然是与我们的初衷：建立一个长期运行的稳定集群，相违背的。</p>
+<h3 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h3><p>问题分析完了，怎么解决呢？</p>
+<p>预想方案：</p>
+<ol>
+<li>开个无限循环的主进程</li>
+<li>把hadoop相关进程作为主进程</li>
+</ol>
+<p>容器启动时仅能指定一条指令，连 &amp;&amp; 都不好使，所以以上方案对于需要在启动真正程序前启动一些辅助进程的情况，比如，hadoop所需的ssh服务，就需要执行 service ssh start开启，就不适用了。</p>
+<p>那么不妨开个万能程序——bash。</p>
+<p>于是，我将entrypoint设置为 “sh”。</p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>设置为“sh”姑且算是解决了容器莫名消失的问题，但是，集群的事前准备还是需要单独处理的。</p>
+<p>于是，怎么部署呢？</p>
+<p>老样子</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compse up</span><br></pre></td></tr></table></figure>
+
+<p>集群启动！</p>
+<p>然后，一个一个地进入容器执行指令喽~</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it container bash</span><br></pre></td></tr></table></figure>
+
+<p>虽然有点low，但生活就是这样。兴许有更好的方法，但我目前还不知道，以后再探索吧！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/Technology/Software-Engineering/Docker/docker-compose/" rel="prev" title="Docker-Compose">
+                  <i class="fa fa-chevron-left"></i> Docker-Compose
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/%E4%B8%AA%E4%BA%BA%E5%BF%83%E5%BE%97/way-to-microservice/" rel="next" title="Way To MicroService">
+                  Way To MicroService <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Logres</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"left","width":225,"height":450},"mobile":{"show":true},"log":false});</script></body>
+</html>

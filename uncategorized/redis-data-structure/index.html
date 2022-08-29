@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha256-xejo6yLi6vGtAjcMIsY8BHdKsLg7QynVlFMzdQgUuy8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.logres.tech","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.3","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="书接上回,面试破防有感中，我遭遇了面试官的夺命连环问，其中让我最久久不能平息的莫过于“你了解Redis数据结构的底层实现吗？”。遥记曾多次看到过类似文章，但总是用各种理由推脱，没仔细研究，这才在面试上吃了大亏。为了弥补面试的遗憾，我花了些时间，研究了Redis的数据结构底层实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis Data Structure">
+<meta property="og:url" content="https://blog.logres.tech/uncategorized/redis-data-structure/index.html">
+<meta property="og:site_name" content="Logres&#39; Blog">
+<meta property="og:description" content="书接上回,面试破防有感中，我遭遇了面试官的夺命连环问，其中让我最久久不能平息的莫过于“你了解Redis数据结构的底层实现吗？”。遥记曾多次看到过类似文章，但总是用各种理由推脱，没仔细研究，这才在面试上吃了大亏。为了弥补面试的遗憾，我花了些时间，研究了Redis的数据结构底层实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-08-24T06:09:08.000Z">
+<meta property="article:modified_time" content="2022-08-24T14:37:02.683Z">
+<meta property="article:author" content="Logres">
+<meta property="article:tag" content="Logres">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.logres.tech/uncategorized/redis-data-structure/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.logres.tech/uncategorized/redis-data-structure/","path":"uncategorized/redis-data-structure/","title":"Redis Data Structure"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Redis Data Structure | Logres' Blog</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Logres' Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">君子不器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-game"><a href="/" rel="section"><i class="fa fa-gamepad fa-fw"></i>game</a></li><li class="menu-item menu-item-academic"><a href="/" rel="section"><i class="fa fas fa-graduation-cap fa-fw"></i>academic</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis%E7%9A%84%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8"><span class="nav-number">1.</span> <span class="nav-text">Redis的数据存储</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Simple-Dynamic-String"><span class="nav-number">1.1.</span> <span class="nav-text">Simple Dynamic String</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8"><span class="nav-number">1.2.</span> <span class="nav-text">双向链表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8"><span class="nav-number">1.3.</span> <span class="nav-text">压缩列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ListPack%E4%B8%8EQuickList"><span class="nav-number">1.4.</span> <span class="nav-text">ListPack与QuickList</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B4%E6%95%B0%E9%9B%86%E5%90%88"><span class="nav-number">1.5.</span> <span class="nav-text">整数集合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%B3%E8%A1%A8"><span class="nav-number">1.6.</span> <span class="nav-text">跳表</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Logres</p>
+  <div class="site-description" itemprop="description">凡有所学，皆成性格。</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/logres" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;logres" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:logres_king@126.com" title="E-Mail → mailto:logres_king@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.logres.tech/uncategorized/redis-data-structure/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Logres">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Logres' Blog">
+      <meta itemprop="description" content="凡有所学，皆成性格。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Redis Data Structure | Logres' Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis Data Structure
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2022-08-24 14:09:08 / 修改时间：22:37:02" itemprop="dateCreated datePublished" datetime="2022-08-24T14:09:08+08:00">2022-08-24</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>书接上回,<a href="/uncategorized/%E9%9D%A2%E8%AF%95%E7%A0%B4%E9%98%B2%E6%9C%89%E6%84%9F/" title="面试破防有感">面试破防有感</a>中，我遭遇了面试官的夺命连环问，其中让我最久久不能平息的莫过于“你了解Redis数据结构的底层实现吗？”。遥记曾多次看到过类似文章，但总是用各种理由推脱，没仔细研究，这才在面试上吃了大亏。为了弥补面试的遗憾，我花了些时间，研究了Redis的数据结构底层实现。</p>
+<span id="more"></span>
+
+<h2 id="Redis的数据存储"><a href="#Redis的数据存储" class="headerlink" title="Redis的数据存储"></a>Redis的数据存储</h2><p>讨论Redis底层的几种数据结构前，我们需要先了解到Redis是如何阻止其中五花八门的数据类型的。</p>
+
+
+<p>redisDb中存储有两个hash表，用于存储我们存于其中的键值对，其中一个正常使用，另一个用于<strong>rehash</strong>。</p>
+<p>哈希表中的每一项对应一个键值对，其中键为String对象，而Value则可能是五种基础数据对象中的一种，所以使用void*指针，满足多态需求。而在value对象与实际使用的底层数据结构间，也利用了这种多态。</p>
+
+
+<h3 id="Simple-Dynamic-String"><a href="#Simple-Dynamic-String" class="headerlink" title="Simple Dynamic String"></a>Simple Dynamic String</h3><p>Redis使用C进行开发，而C是没有提供String类型的，仅有一些基于Char*的库操作函数，一般仅满足文本编辑。但在Redis中，String指的不仅仅是狭义上的文本，而是泛指一切可二进制序列化的文本文件。于是，Redis自己设计了SDS数据类型，用于字符串处理。</p>
+
+
+<p>其中len字段记载已存储字符串长度，alloc则表示buf中可以存储的最大长度,flags用于表示len与alloc的长度(uint5-uint32)，用于压缩头部。</p>
+<h3 id="双向链表"><a href="#双向链表" class="headerlink" title="双向链表"></a>双向链表</h3><p>双向链表是一种十分泛用的数据结构了。</p>
+
+
+<p>其中head与tail对头尾进行索引，len记载数量。</p>
+<h3 id="压缩列表"><a href="#压缩列表" class="headerlink" title="压缩列表"></a>压缩列表</h3><p>双向列表作为列表，使用的是离散的内存空间，往往难以进行CPU缓存优化，同时，头部与大量的指针也占据了不少空间。因此，基于双向链表，又改进出了压缩链表。</p>
+
+
+<p>压缩链表是一种类数组结构，起始处的几个字段记载了压缩列表所需的元数据——字节数量、尾部偏移、节点数量。之后，连续的entry保存了列表所需数据。</p>
+<p>分析entry结构，包含prevlen、encoding与data三个字段，分别表示前一个节点的长度、编码方式和数据。</p>
+<p>为什么要保存前一个节点的数据呢？因为压缩列表采用的是尾遍历的方式，从最后一个节点开始，减去prevlen，即可获取前一个节点的初始地址。</p>
+<p>压缩列表虽然节省空间，但是带来了一个比较大的问题：连锁更新。</p>
+<p>当我们在首个元素前——尾遍历的最后一个元素后插入元素后，需要更新前一个元素的prevlen字段，而这个prevlen字段的长度是自适应的（即按照表示长度的大小变化滋生大小，如int8能表示到255，但是需要int16才能表示256），如果前一个元素过大，后一个元素的prevlen装不下，就将导致后一个元素的prevlen需要变大，导致后续节点的连锁反应。</p>
+<h3 id="ListPack与QuickList"><a href="#ListPack与QuickList" class="headerlink" title="ListPack与QuickList"></a>ListPack与QuickList</h3><p>ListPack与QuickList是对压缩链表的改进。</p>
+
+
+<p>Quicklist结合了双向列表与压缩列表，在可能产生连锁更新时，插入一个新的双向链表节点，并将元素放入新的节点中的压缩列表中。</p>
+
+
+<p>ListPack的解决方案更为高明，不采用尾部遍历，而采用正向遍历，保存自身长度，指针偏移自身长度后得到下一个元素，完美地避开了连锁更新地问题。</p>
+<h3 id="整数集合"><a href="#整数集合" class="headerlink" title="整数集合"></a>整数集合</h3><p>相较于其他数据结构，整数集合看起来就非常简洁。</p>
+<p>其头部包含元素个数、元素长度与元素内容三个字段，其中元素内容按下排列。</p>
+
+
+<p>在元素较小时，使用int8类型编码，而当存入较大元素是，则进行整体升级，原地扩展更大空间，并将原元素升级到较大类型存入。但是不支持向下转型。</p>
+<h3 id="跳表"><a href="#跳表" class="headerlink" title="跳表"></a>跳表</h3><p>跳表是一种媲美红黑树的数据结构，通过巧妙地设置索引比例与层数，我们可以获得如平衡树般的查找效率，且由于其底层有序，相较于一般平衡树，还支持范围查询。</p>
+
+
+<p>具体内容可以查看这篇<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/9d8296562806">博客</a></p>
+<p>Redis中的跳表，除了元素内容外，还存在一个可重复的权重属性，故虽然跳表使用Score（权重）作为索引，但查询时也需要比较元素内容。</p>
+<p>注意：虽然五种类型与底层实现间存在多种可替换实现，但Zset是<strong>同时使用</strong>了Listpack与跳表，其中，Listpack进行哈希查找，而跳表实现范围遍历。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/uncategorized/python%E5%B9%B6%E5%8F%91%E2%80%94%E5%8D%8F%E7%A8%8B/" rel="prev" title="Python并发—协程">
+                  <i class="fa fa-chevron-left"></i> Python并发—协程
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/uncategorized/%E9%9D%A2%E8%AF%95%E7%A0%B4%E9%98%B2%E6%9C%89%E6%84%9F/" rel="next" title="面试破防有感">
+                  面试破防有感 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Logres</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"left","width":225,"height":450},"mobile":{"show":true},"log":false});</script></body>
+</html>

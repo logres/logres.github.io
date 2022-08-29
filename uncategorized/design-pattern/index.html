@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha256-xejo6yLi6vGtAjcMIsY8BHdKsLg7QynVlFMzdQgUuy8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.logres.tech","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.3","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="小记设计模式在软件构造的过程中，尽可能地重用代码，保持源代码地简洁是开发人员应有的追求之一。为达成这个目标，开发人员在框架上、在编码上都下足了功夫。而设计模式，即Design Patterns，则是开发人员将常用的设计方案与设计思想提炼后的产物。通过学习设计模式，我们能够快速领略先人的开发经验，助力与自己的软件开发。此处我就以尽可能简洁的方式，快速概述22种设计模式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Design Pattern">
+<meta property="og:url" content="https://blog.logres.tech/uncategorized/design-pattern/index.html">
+<meta property="og:site_name" content="Logres&#39; Blog">
+<meta property="og:description" content="小记设计模式在软件构造的过程中，尽可能地重用代码，保持源代码地简洁是开发人员应有的追求之一。为达成这个目标，开发人员在框架上、在编码上都下足了功夫。而设计模式，即Design Patterns，则是开发人员将常用的设计方案与设计思想提炼后的产物。通过学习设计模式，我们能够快速领略先人的开发经验，助力与自己的软件开发。此处我就以尽可能简洁的方式，快速概述22种设计模式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-18T05:13:00.000Z">
+<meta property="article:modified_time" content="2022-06-07T07:38:47.385Z">
+<meta property="article:author" content="Logres">
+<meta property="article:tag" content="Note">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.logres.tech/uncategorized/design-pattern/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.logres.tech/uncategorized/design-pattern/","path":"uncategorized/design-pattern/","title":"Design Pattern"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Design Pattern | Logres' Blog</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Logres' Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">君子不器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-game"><a href="/" rel="section"><i class="fa fa-gamepad fa-fw"></i>game</a></li><li class="menu-item menu-item-academic"><a href="/" rel="section"><i class="fa fas fa-graduation-cap fa-fw"></i>academic</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%8F%E8%AE%B0%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">小记设计模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Creational-patterns"><span class="nav-number">1.1.</span> <span class="nav-text">Creational patterns</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Static-Factory"><span class="nav-number">1.1.1.</span> <span class="nav-text">Static Factory</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Factory"><span class="nav-number">1.1.2.</span> <span class="nav-text">Factory</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Abstract-Factory"><span class="nav-number">1.1.3.</span> <span class="nav-text">Abstract Factory</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Builder"><span class="nav-number">1.1.4.</span> <span class="nav-text">Builder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Singleton"><span class="nav-number">1.1.5.</span> <span class="nav-text">Singleton</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Prototype"><span class="nav-number">1.1.6.</span> <span class="nav-text">Prototype</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Structural-patterns"><span class="nav-number">1.2.</span> <span class="nav-text">Structural patterns</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Adapter"><span class="nav-number">1.2.1.</span> <span class="nav-text">Adapter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Decorator"><span class="nav-number">1.2.2.</span> <span class="nav-text">Decorator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bridge"><span class="nav-number">1.2.3.</span> <span class="nav-text">Bridge</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Compose"><span class="nav-number">1.2.4.</span> <span class="nav-text">Compose</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Facade"><span class="nav-number">1.2.5.</span> <span class="nav-text">Facade</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Flyweight"><span class="nav-number">1.2.6.</span> <span class="nav-text">Flyweight</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Proxy"><span class="nav-number">1.2.7.</span> <span class="nav-text">Proxy</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Behavioral-patterns"><span class="nav-number">1.3.</span> <span class="nav-text">Behavioral patterns</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Chain-of-Responsibility"><span class="nav-number">1.3.1.</span> <span class="nav-text">Chain of Responsibility</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Memento"><span class="nav-number">1.3.2.</span> <span class="nav-text">Memento</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Observer"><span class="nav-number">1.3.3.</span> <span class="nav-text">Observer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Strategy"><span class="nav-number">1.3.4.</span> <span class="nav-text">Strategy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Template-Method"><span class="nav-number">1.3.5.</span> <span class="nav-text">Template Method</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Iterator"><span class="nav-number">1.3.6.</span> <span class="nav-text">Iterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Visitor"><span class="nav-number">1.3.7.</span> <span class="nav-text">Visitor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mediator"><span class="nav-number">1.3.8.</span> <span class="nav-text">Mediator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Command"><span class="nav-number">1.3.9.</span> <span class="nav-text">Command</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">1.4.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Logres</p>
+  <div class="site-description" itemprop="description">凡有所学，皆成性格。</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/logres" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;logres" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:logres_king@126.com" title="E-Mail → mailto:logres_king@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.logres.tech/uncategorized/design-pattern/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Logres">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Logres' Blog">
+      <meta itemprop="description" content="凡有所学，皆成性格。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Design Pattern | Logres' Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Design Pattern
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-06-18 13:13:00" itemprop="dateCreated datePublished" datetime="2021-06-18T13:13:00+08:00">2021-06-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-06-07 15:38:47" itemprop="dateModified" datetime="2022-06-07T15:38:47+08:00">2022-06-07</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="小记设计模式"><a href="#小记设计模式" class="headerlink" title="小记设计模式"></a>小记设计模式</h1><p>在软件构造的过程中，尽可能地重用代码，保持源代码地简洁是开发人员应有的追求之一。为达成这个目标，开发人员在框架上、在编码上都下足了功夫。而设计模式，即Design Patterns，则是开发人员将常用的设计方案与设计思想提炼后的产物。通过学习设计模式，我们能够快速领略先人的开发经验，助力与自己的软件开发。此处我就以尽可能简洁的方式，快速概述22种设计模式。</p>
+<span id="more"></span>
+
+<h2 id="Creational-patterns"><a href="#Creational-patterns" class="headerlink" title="Creational patterns"></a>Creational patterns</h2><p>Creational patterns，即创建型设计模式，目的在于分离创建与使用。</p>
+<h3 id="Static-Factory"><a href="#Static-Factory" class="headerlink" title="Static Factory"></a>Static Factory</h3><p><strong>静态工厂模式</strong>，建立工厂类，使用静态方法生成对象，可以隐藏对象的实际生成。对于生成种不同类的情况，需要传入参数，在内部进行逻辑判断。追加新类时不符合开闭原则。</p>
+<h3 id="Factory"><a href="#Factory" class="headerlink" title="Factory"></a>Factory</h3><p><strong>工厂模式</strong>，同样建立工厂类，仅作为接口，而由其具体子类来实现建造逻辑，实现不同类的生成。追加新类仅需要增加对应子类，符合开闭原则。</p>
+<h3 id="Abstract-Factory"><a href="#Abstract-Factory" class="headerlink" title="Abstract Factory"></a>Abstract Factory</h3><p>明晰产品等级结构（满足统一接口的不同类）与产品族（一系列不同接口），<strong>抽象工厂</strong>不仅仅生成一个类对象，而是生成在每个产品族中同产品等级结构的一些列产品。抽象工厂是工厂模式最为普适的形式，其对产品等级结构满足开闭，对产品族则不满足。</p>
+<h3 id="Builder"><a href="#Builder" class="headerlink" title="Builder"></a>Builder</h3><p>有时所需的对象中可能还包含许多其他对象，我们不希望在业务逻辑中手动生成一系列对象，再将其组装起来，此时可以将对应业务逻辑打包入一个类中，就称之为<strong>生成器</strong>。</p>
+<h3 id="Singleton"><a href="#Singleton" class="headerlink" title="Singleton"></a>Singleton</h3><p>对于配置类、连接池等在程序运行时不需要变动或希望全局唯一的类，我们可以通过私有化其构造方法，暴露单例构造方法，静态化实例字段，并在第一次调用构造方法时实例化静态实例字段，之后的调用都指向静态实例字段即可。单例模式实现了全局唯一，但是却将生成代码与业务逻辑混合，每次修改业务逻辑都需要修改类，不满足开闭。</p>
+<h3 id="Prototype"><a href="#Prototype" class="headerlink" title="Prototype"></a>Prototype</h3><p>编码过程中时长需要复制对象，但这意味着需要将类内部的所有字段结构暴露出来，使得封装泄露，原型方法的思路在于将复制的过程封装在被复制对象的类内部，尤其自己进行复制过程。</p>
+<h2 id="Structural-patterns"><a href="#Structural-patterns" class="headerlink" title="Structural patterns"></a>Structural patterns</h2><p>Structural patterns，结构型设计模式，其主要目的为更好地处理对象与对象直接的接口，使多个类之间可以实现更低的耦合。</p>
+<h3 id="Adapter"><a href="#Adapter" class="headerlink" title="Adapter"></a>Adapter</h3><p>Adaptor，即适配器模式，顾名思义，适配器模式像一个电源适配器一样，作为中间类，将原本不适配的两个电器与电源&#x2F;类联系到一起。</p>
+<p>比如A类中的某个方法要调用B类中的方法来获取数据，然而B类中获取数据的方法与A类所调用的方法不同名。于是，设计类C，持有B类的引用，同时符合A类的调用接口，并在内部通过调用B类来实现A类接口，其间可以进行数据类型的转换等，实现适配。这称为<strong>对象适配器</strong>，在支多重继承的语言中，也可以由C同时继承A、B来实现，称为<strong>类适配器</strong>。这么一来，无需修改A、B的代码，而通过引入中间类C解决了兼容性问题。符合了开发封闭原则。</p>
+<h3 id="Decorator"><a href="#Decorator" class="headerlink" title="Decorator"></a>Decorator</h3><p>Decorator，即装饰器模式。<br>在开发过程中，常常遇到一个类需要多种附加功能的场合，然而多种附加功能不一定同时用到。常规来想可以组合接口，分别实现，但是这将带来组合爆炸。</p>
+<p>装饰器模式给出了相应的解决方案：</p>
+<ol>
+<li>给出抽象接口类（向外暴露）</li>
+<li>给出实现类，可一可多，实现非附加功能；给出抽象装饰器类：<ol>
+<li>保有抽象类的引用</li>
+<li>通过接受一个抽象类对象初始化</li>
+</ol>
+</li>
+<li>给出具体装饰器类；通过调用其内附加代码与类引用实现附加功能</li>
+<li>使用时，新建实现类，通过传递引用，新建装饰器类的对象，获取其引用（此过程可嵌套）。</li>
+<li>使用附加功能。</li>
+</ol>
+<p>这样一来，就通过一种巧妙的机制，避免了继承带来的复杂结构。</p>
+<p>装饰器模式可以递归组合，以此通过追加装饰类带来不同的附加功能，符合开闭原则，且其接口与原对象一致，对外界透明。</p>
+<h3 id="Bridge"><a href="#Bridge" class="headerlink" title="Bridge"></a>Bridge</h3><p><strong>桥接模式</strong>是解决类别沿着不同维度异化而导致<strong>组合爆炸</strong>的一种方案，其将一个维度作为主体，另一个维度作为客体，主题持有客体的引用，以此实现不同维度的组合。</p>
+<p>相比装饰模式，桥接模式侧重于不同维度，而非同维度的不同功能的不同特性。</p>
+<h3 id="Compose"><a href="#Compose" class="headerlink" title="Compose"></a>Compose</h3><p><strong>组合模式</strong>的目的在于解决较为复杂的对象嵌套问题。通过每一层对象将调用划分给其持有对象进行处理或自我处理，组合模式能够避免过于深层次的直接调用。这样替换子对象时，无需修改最根处的调用，符合开闭。</p>
+<h3 id="Facade"><a href="#Facade" class="headerlink" title="Facade"></a>Facade</h3><p><strong>外观模式</strong>将一个庞大的复杂系统进行封装，由外观类来梳理复杂的业务流程，将其组合成特定的接口再向外暴露，可以实现封装，易于对业务流程进行替换，且保持接口不变。</p>
+<p>外观模式与创造器模式类似，都将负责过程隐藏，不过创造器模式更注重于对象的组装，而外观模式的行为更加广泛。</p>
+<h3 id="Flyweight"><a href="#Flyweight" class="headerlink" title="Flyweight"></a>Flyweight</h3><p><strong>享元模式</strong>将大量对象的持有的不变或共通元素抽离出来，作为<strong>享元类</strong>，让对象以引用的形式持有，节省内存，且便于集中修改，利于增加新<strong>享元类</strong>。静态字段也许也能看作享元的一种？</p>
+<h3 id="Proxy"><a href="#Proxy" class="headerlink" title="Proxy"></a>Proxy</h3><p><strong>代理模式</strong>一边实现接口，另一边持有对象，在访问过程中可以进行一些额外操作，如缓存。</p>
+<p>代理模式可以说是弱化的装饰器模式，其不支持嵌套组合。</p>
+<h2 id="Behavioral-patterns"><a href="#Behavioral-patterns" class="headerlink" title="Behavioral patterns"></a>Behavioral patterns</h2><p>Behavioral patterns，行为型设计模式，将具体动作与框架分离，实现代码的可复用性。</p>
+<h3 id="Chain-of-Responsibility"><a href="#Chain-of-Responsibility" class="headerlink" title="Chain of Responsibility"></a>Chain of Responsibility</h3><p><strong>责任链模式</strong>，将一些列流程层层嵌套，如用户请求处理：验证码验证-&gt;密码验证-&gt;IP验证……,将传递链条暴露自然可行，但是将链条嵌套起来，是一种更优雅的解决方案。</p>
+<h3 id="Memento"><a href="#Memento" class="headerlink" title="Memento"></a>Memento</h3><p><strong>备忘录模式</strong>，实现对被备忘对象内部状态的记录，但是交由另一个负责人类进行持有，仅对被备忘对象开放访问权限，实现状态的存储，适用于撤销栈等领域。</p>
+<h3 id="Observer"><a href="#Observer" class="headerlink" title="Observer"></a>Observer</h3><p><strong>观察者模式</strong>，使用订阅发布机制，被观察者记录所有观察者，在被观察者发生变化时，调用观察者登记的回调函数，实现观察机制。</p>
+<h3 id="Strategy"><a href="#Strategy" class="headerlink" title="Strategy"></a>Strategy</h3><p>Strategy，即<strong>策略模式</strong>。该模式将功能与算法分离，用户通过传入实现了指定接口的算法对象，来运行功能类。</p>
+<h3 id="Template-Method"><a href="#Template-Method" class="headerlink" title="Template Method"></a>Template Method</h3><p>Template Method即<strong>模板模式</strong>，其将某一个功能拆分为多个环节，将部分环节留白，待用户类继承抽象接口以实现。</p>
+<p>注意策略模式与模板模式的差异，策略模式由传入对象进行委托实现，而模板模式则由继承机制实现。</p>
+<h3 id="Iterator"><a href="#Iterator" class="headerlink" title="Iterator"></a>Iterator</h3><p>Iterator，<strong>迭代器模式</strong>，即提供统一的遍历手段，封装存储方式与遍历动作，要实现不同遍历可添加新的类型，符合开闭原则。</p>
+<h3 id="Visitor"><a href="#Visitor" class="headerlink" title="Visitor"></a>Visitor</h3><p>Visitor，<strong>访问者模式</strong>，将<strong>功能</strong>与操作隔离，将对多种对象的操作放入一个类中。编码中，并非访问器接收对象，而是对象接收访问器，反向调用其中对应回调方法。</p>
+<h3 id="Mediator"><a href="#Mediator" class="headerlink" title="Mediator"></a>Mediator</h3><p><strong>中介模式</strong>，将复杂系统中近乎全连接的访问网络改造成以中介为中心的星形网络，所有对象将请求转发给中介进行，在对象看来，一切事务都由中介进行处理，降低了所有模块的扇出与扇入，简洁化了系统。</p>
+<h3 id="Command"><a href="#Command" class="headerlink" title="Command"></a>Command</h3><p><strong>命令模式</strong>，类似中介模式，但是不产生一个全知全能的中介类，而是为每一个可能的访问建立一个子类，将对象间访问逻辑封装到类中，利于修改实现，符合开闭。</p>
+<p>例子：UI中的按钮行为就可以绑定到一个对象上。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a target="_blank" rel="noopener" href="https://refactoringguru.cn/design-patterns/catalog">设计模式</a></p>
+<p>知识水平与时间精力优先，暂且就先写到这里，待学成再来补坑</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Note/" rel="tag"># Note</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/uncategorized/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="prev" title="计算机网络">
+                  <i class="fa fa-chevron-left"></i> 计算机网络
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/Technology/Software-Engineering/Git/git-guide-and-fundamental/" rel="next" title="Git: Guide and Fundamental">
+                  Git: Guide and Fundamental <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Logres</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"left","width":225,"height":450},"mobile":{"show":true},"log":false});</script></body>
+</html>
