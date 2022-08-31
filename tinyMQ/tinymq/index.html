@@ -28,11 +28,15 @@
 <meta property="og:site_name" content="Logres&#39; Blog">
 <meta property="og:description" content="本文记述了笔者对中间件中消息队列的学习历程，以及一个模仿rabbitMQ架构的tinyMQ的实现历程。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.logres.tech/tinyMQ/tinymq/MQCompare.png">
+<meta property="og:image" content="https://blog.logres.tech/tinyMQ/tinymq/rabbitmqstruct.png">
+<meta property="og:image" content="https://blog.logres.tech/tinyMQ/tinymq/TinyMQstructure.png">
 <meta property="article:published_time" content="2022-04-08T04:08:11.000Z">
-<meta property="article:modified_time" content="2022-08-29T12:29:50.564Z">
+<meta property="article:modified_time" content="2022-08-29T12:29:50.000Z">
 <meta property="article:author" content="Logres">
 <meta property="article:tag" content="MQ">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.logres.tech/tinyMQ/tinymq/MQCompare.png">
 
 
 <link rel="canonical" href="https://blog.logres.tech/tinyMQ/tinymq/">
@@ -294,16 +298,16 @@
 <p>这一切都导致上游无法假定下游的行为，从无法进行一些依赖于下游行为的操作。</p>
 <p>一般而言，我们会将一些无需反馈的服务放在消息队列的消费者端，如发送不重要的通知邮件等；而较为强调及时性、一致性的服务，如数据库操作，交由RPC处理。</p>
 <h3 id="常见的消息队列"><a href="#常见的消息队列" class="headerlink" title="常见的消息队列"></a>常见的消息队列</h3><p>消息队列发展多年，经历过野蛮发展、百花齐放的时期，也经历了大一统时期（AMQP协定），如今则处于统一背景下的稍作自由。</p>
-
+<img src="/tinyMQ/tinymq/MQCompare.png" class="">
 
 <p>由于协议诸多，且相对复杂，笔者也无法完全掌握，就不信口胡诌，而交由读者自己去探索了。</p>
 <h2 id="TinyMQ"><a href="#TinyMQ" class="headerlink" title="TinyMQ"></a>TinyMQ</h2><p>为了更好地学习消息中间件的相关细节，以及顺带锻炼一下自己的并发编程能力，笔者将TinyMQ作为笔者的消息中间件学习的第一个例子。</p>
 <h3 id="TinyMQ的架构"><a href="#TinyMQ的架构" class="headerlink" title="TinyMQ的架构"></a>TinyMQ的架构</h3><p>TinyMQ是笔者在中间件课程组队实验中的产物，它是一个简单的消息中间件，模仿rabbitMQ而成。当然，由于笔者与搭档精力、能力有限，没能亲自解读rabbitMQ源码，仅能依赖网络上的资料进行推测。</p>
-
+<img src="/tinyMQ/tinymq/rabbitmqstruct.png" class="">
 
 <p>rabbitMQ中，消息发布者并不直接将消息放入队列，而是将消息交给exchanger，exchanger再将消息交给队列；消息消费者向MQ订阅消息队列，消息队列在合适的时机将队列中的消息发送给订阅者。</p>
 <p>其间，消息发布者与Exchanger构成多对多关系，表征不同上游可以发布同一消息，同一上游也可以发布不同消息；Exchanger与Queue构成多对多关系，以此实现消息的订阅自由性；而订阅者与Queue则常常是一对一关系，用于保证消息的唯一性，多对多则用于实现负载均衡，订阅统一Queue的消费者构成订阅组，仅有其中一人能接收到消息。</p>
-
+<img src="/tinyMQ/tinymq/TinyMQstructure.png" class="">
 
 <p>在TinyMQ中，对Exchanger作了进一步简化，Exchanger仅仅是一个key值到订阅该key值的Queue的映射。</p>
 <p>发布者将带有key值的消息发布到MQ，MQ处理该消息：</p>
